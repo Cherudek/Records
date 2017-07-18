@@ -97,37 +97,33 @@
             <EditText
                 android:id="@+id/edit_quantity"
                 style="@style/EditorFieldStyle"
+                android:layout_weight="1"
                 android:hint="@string/hint_Quantity"
                 android:inputType="number" />
 
+            <!-- Quantity Update Buttons -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <!-- Add Record in inventory -->
+                <Button
+                    android:id="@+id/plus"
+                    style="@style/PlusMinusButtonStyle"
+                    android:text="@string/plus" />
+
+                <!-- remove Record in inventory -->
+                <Button
+                    android:id="@+id/minus"
+                    style="@style/PlusMinusButtonStyle"
+                    android:text="@string/minus" />
+            </LinearLayout>
+
         </LinearLayout>
     </LinearLayout>
-
-    <!-- Quantity Update Buttons -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_margin"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal">
-
-        <!-- Add Record in inventory -->
-        <Button
-            android:id="@+id/plus"
-            style="@style/PlusMinusButtonStyle"
-            android:text="@string/plus" />
-
-        <TextView
-            style="@style/ChangeQuantity"
-            android:text="@string/category_quantity" />
-
-        <!-- remove Record in inventory -->
-        <Button
-            android:id="@+id/minus"
-            style="@style/PlusMinusButtonStyle"
-            android:text="@string/minus" />
-    </LinearLayout>
-
 
     <!-- Album Cover   -->
     <LinearLayout
@@ -142,14 +138,66 @@
 
         <ImageView
             android:id="@+id/edit_image_cover"
-            android:layout_marginTop="@dimen/activity_margin"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:layout_weight="1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/the_final_countdown_single"/>
+            android:src="@mipmap/add_record_cover" />
 
 
     </LinearLayout>
+
+    <!-- Supplier Name   -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Supplier Name category -->
+        <TextView
+            style="@style/CategoryStyle"
+            android:text="@string/category_supplier_name" />
+
+        <!-- Supplier name input Field -->
+        <EditText
+            android:id="@+id/edit_supplier_name"
+            style="@style/EditorFieldStyle"
+            android:hint="@string/hint_Supplier_name"
+            android:inputType="text" />
+
+    </LinearLayout>
+
+    <!-- Supplier  email  -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Supplier email category -->
+        <TextView
+            style="@style/CategoryStyle"
+            android:text="@string/category_supplier_email" />
+
+        <!-- Supplier email input Field -->
+        <EditText
+            android:id="@+id/edit_supplier_email"
+            style="@style/EditorFieldStyle"
+            android:hint="@string/hint_Supplier_email"
+            android:inputType="textEmailAddress" />
+    </LinearLayout>
+
+    <!-- Add Record in inventory -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center">
+
+        <Button
+            android:id="@+id/email_button"
+            style="@style/emailButton"
+            android:background="@drawable/ic_email_black_24dp" />
+
+    </LinearLayout>
+
 
 </LinearLayout>
 

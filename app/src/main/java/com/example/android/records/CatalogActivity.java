@@ -118,6 +118,8 @@ public class CatalogActivity extends AppCompatActivity implements
         values.put(RecordEntry.COLUMN_QUANTITY, 10);
         values.put(RecordEntry.COLUMN_PRICE, 10);
         values.put(RecordEntry.COLUMN_RECORD_COVER, 101);
+        values.put(RecordEntry.COLUMN_SUPPLIER_CONTACT, "support@bleep.com");
+
 
         // Insert a new row for Final CountDown into the provider using the ContentResolver.
         // Use the {@link RecordEntry#CONTENT_URI} to indicate that we want to insert

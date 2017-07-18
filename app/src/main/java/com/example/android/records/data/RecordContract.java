@@ -120,7 +120,14 @@ public final class RecordContract {
          * <p>
          * Type: TEXT
          */
-        public final static String COLUMN_SUPPLIER_CONTACT = "supplier email";
+        public final static String COLUMN_SUPPLIER_NAME = "supplier name";
+
+        /**
+         * Supplier email.
+         * <p>
+         * Type: TEXT
+         */
+        public final static String COLUMN_SUPPLIER_EMAIL = "supplier email";
 
 
     }

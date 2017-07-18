@@ -172,10 +172,16 @@ public class RecordProvider extends ContentProvider {
             throw new IllegalArgumentException("Record requires an image");
         }
 
-        // Check that the record contact supplier  is not null
-        String supplierContact = values.getAsString(RecordEntry.COLUMN_SUPPLIER_CONTACT);
-        if (supplierContact == null) {
-            throw new IllegalArgumentException("Record requires a supplier contact");
+        // Check that the record contact supplier name is not null
+        String supplierName = values.getAsString(RecordEntry.COLUMN_SUPPLIER_NAME);
+        if (supplierName == null) {
+            throw new IllegalArgumentException("Record requires a supplier contact name");
+        }
+
+        // Check that the record contact supplier email is not null
+        String supplierEmail = values.getAsString(RecordEntry.COLUMN_SUPPLIER_EMAIL);
+        if (supplierEmail == null) {
+            throw new IllegalArgumentException("Record requires a supplier contact email");
         }
 
 
@@ -253,9 +259,16 @@ public class RecordProvider extends ContentProvider {
         }
 
         // Check that the record contact supplier  is not null
-        String supplierContact = values.getAsString(RecordEntry.COLUMN_SUPPLIER_CONTACT);
-        if (supplierContact == null) {
+        String supplierName = values.getAsString(RecordEntry.COLUMN_SUPPLIER_NAME);
+        if (supplierName == null) {
             throw new IllegalArgumentException("Record requires a supplier contact");
+        }
+
+
+        // Check that the record contact supplier  is not null
+        String supplierEmail = values.getAsString(RecordEntry.COLUMN_SUPPLIER_EMAIL);
+        if (supplierEmail == null) {
+            throw new IllegalArgumentException("Record requires a supplier email");
         }
 
         // If there are no values to update, then don't try to update the database

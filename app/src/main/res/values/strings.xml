@@ -86,8 +86,14 @@
     <!-- Label for price information in the editor [CHAR LIMIT=30] -->
     <string name="category_price">Price</string>
 
-    <!-- Label for measurement information in the editor [CHAR LIMIT=30] -->
+    <!-- Label for album cover information in the editor [CHAR LIMIT=30] -->
     <string name="category_album_cover">Cover</string>
+
+    <!-- Label for measurement information in the editor [CHAR LIMIT=30] -->
+    <string name="category_supplier_name">Supplier</string>
+
+    <!-- Label for measurement information in the editor [CHAR LIMIT=30] -->
+    <string name="category_supplier_email">email</string>
 
     <!-- Text hint for name field in the editor [CHAR LIMIT=30] -->
     <string name="hint_album_name">Album Name</string>
@@ -100,6 +106,12 @@
 
     <!-- Units for weight of the pet (kilograms) [CHAR LIMIT=5] -->
     <string name="hint_Quantity">Quantity</string>
+
+    <!-- Units for Supplier Name of the pet (kilograms) [CHAR LIMIT=5] -->
+    <string name="hint_Supplier_name">Supplier Name</string>
+
+    <!-- Units for Supplier email of the pet (kilograms) [CHAR LIMIT=5] -->
+    <string name="hint_Supplier_email">Supplier email</string>
 
     <!-- Label for dropdown menu option if the pet's gender is unknown [CHAR LIMIT=20] -->
     <string name="gender_unknown">Unknown</string>

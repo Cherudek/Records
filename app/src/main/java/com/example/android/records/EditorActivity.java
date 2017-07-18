@@ -66,6 +66,16 @@ public class EditorActivity extends AppCompatActivity implements
     /** ImageView field to insert the Record Cover */
     private ImageView mRecordCover;
 
+    /**
+     * EditText field to enter the Record supplier Name
+     */
+    private EditText mContactNameEditText;
+
+    /**
+     * EditText field to enter the Record supplier Email
+     */
+    private EditText mContactEmailEditText;
+
 
     /** Boolean flag that keeps track of whether the record has been edited (true) or not (false) */
     private boolean mRecordHasChanged = false;
@@ -116,6 +126,8 @@ public class EditorActivity extends AppCompatActivity implements
         mQuantityEditText = (EditText) findViewById(R.id.edit_quantity);
         mPriceEditText = (EditText) findViewById(R.id.edit_price);
         mRecordCover = (ImageView) findViewById(R.id.edit_image_cover);
+        mContactEditText = (EditText)findViewById();
+
 
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us know if there are unsaved changes
@@ -141,6 +153,7 @@ public class EditorActivity extends AppCompatActivity implements
         String quantityString = mQuantityEditText.getText().toString();
         String priceString = mPriceEditText.getText().toString();
        // String albumCoverString = mRecordCover.getId().toString();
+        String supplierContactString =
 
 
 
