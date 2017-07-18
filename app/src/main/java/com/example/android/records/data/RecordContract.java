@@ -15,18 +15,14 @@
  */
 package com.example.android.records.data;
 
-import android.net.Uri;
 import android.content.ContentResolver;
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
  * API Contract for the Record app.
  */
 public final class RecordContract {
-
-    // To prevent someone from accidentally instantiating the contract class,
-    // give it an empty constructor.
-    private RecordContract() {}
 
     /**
      * The "Content authority" is a name for the entire content provider, similar to the
@@ -35,13 +31,11 @@ public final class RecordContract {
      * device.
      */
     public static final String CONTENT_AUTHORITY = "com.example.android.records";
-
     /**
      * Use CONTENT_AUTHORITY to create the base of all URI's which apps will use to contact
      * the content provider.
      */
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
-
     /**
      * Possible path (appended to base content URI for possible URI's)
      * For instance, content://com.example.android.records/records/ is a valid path for
@@ -49,6 +43,11 @@ public final class RecordContract {
      * as the ContentProvider hasn't been given any information on what to do with "staff".
      */
     public static final String PATH_RECORDS = "records";
+
+    // To prevent someone from accidentally instantiating the contract class,
+    // give it an empty constructor.
+    private RecordContract() {
+    }
 
     /**
      * Inner class that defines constant values for the records database table.
@@ -115,6 +114,13 @@ public final class RecordContract {
          * Type: INTEGER
          */
         public final static String COLUMN_RECORD_COVER = "cover";
+
+        /**
+         * Supplier email.
+         * <p>
+         * Type: TEXT
+         */
+        public final static String COLUMN_SUPPLIER_CONTACT = "supplier email";
 
 
     }

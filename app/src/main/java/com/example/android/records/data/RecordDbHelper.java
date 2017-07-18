@@ -57,7 +57,9 @@ public class RecordDbHelper extends SQLiteOpenHelper {
                 + RecordEntry.COLUMN_BAND_NAME + " TEXT NOT NULL, "
                 + RecordContract.RecordEntry.COLUMN_QUANTITY + " INTEGER NOT NULL DEFAULT 0, "
                 + RecordEntry.COLUMN_PRICE + " INTEGER NOT NULL DEFAULT 0 "
-                + RecordEntry.COLUMN_RECORD_COVER + " INTEGER);";
+                + RecordEntry.COLUMN_RECORD_COVER + " INTEGER NULL DEFAULT 0 "
+                + RecordEntry.COLUMN_SUPPLIER_CONTACT + " TEXT NOT NULL);";
+
 
         // Execute the SQL statement
         db.execSQL(SQL_CREATE_RECORDS_TABLE);

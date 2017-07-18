@@ -166,6 +166,18 @@ public class RecordProvider extends ContentProvider {
             throw new IllegalArgumentException("Record requires valid price");
         }
 
+        // Check that the record image is not null
+        Integer recordCOver = values.getAsInteger(RecordEntry.COLUMN_RECORD_COVER);
+        if (recordCOver == null) {
+            throw new IllegalArgumentException("Record requires an image");
+        }
+
+        // Check that the record contact supplier  is not null
+        String supplierContact = values.getAsString(RecordEntry.COLUMN_SUPPLIER_CONTACT);
+        if (supplierContact == null) {
+            throw new IllegalArgumentException("Record requires a supplier contact");
+        }
+
 
         // Get writable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
@@ -234,7 +246,17 @@ public class RecordProvider extends ContentProvider {
             throw new IllegalArgumentException("Record requires valid price");
         }
 
-        // No need to check the Album Cover, any value is valid (including null).
+        // Check that the record image is not null
+        Integer recordCOver = values.getAsInteger(RecordEntry.COLUMN_RECORD_COVER);
+        if (recordCOver == null) {
+            throw new IllegalArgumentException("Record requires an image");
+        }
+
+        // Check that the record contact supplier  is not null
+        String supplierContact = values.getAsString(RecordEntry.COLUMN_SUPPLIER_CONTACT);
+        if (supplierContact == null) {
+            throw new IllegalArgumentException("Record requires a supplier contact");
+        }
 
         // If there are no values to update, then don't try to update the database
         if (values.size() == 0) {
