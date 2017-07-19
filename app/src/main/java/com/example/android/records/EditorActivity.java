@@ -482,6 +482,7 @@ public class EditorActivity extends AppCompatActivity implements
             mPriceEditText.setText(Integer.toString(price));
 
             mImageUri = Uri.parse(cover);
+            String dummyImage = "drawable://" + imagePath;
             mRecordCover.setImageBitmap(image);
 
             mContactNameEditText.setText(supplierName);
