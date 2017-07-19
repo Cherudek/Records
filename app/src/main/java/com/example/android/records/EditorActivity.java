@@ -112,6 +112,11 @@ public class EditorActivity extends AppCompatActivity implements
     /** Button to add an image to the edit record activity */
     private Button mAddImage;
 
+    /**
+     * Button to order more records from the supplier
+     */
+    private Button mOrder;
+
 
     /** Boolean flag that keeps track of whether the record has been edited (true) or not (false) */
     private boolean mRecordHasChanged = false;
@@ -165,6 +170,7 @@ public class EditorActivity extends AppCompatActivity implements
         mContactNameEditText = (EditText) findViewById(R.id.edit_supplier_name);
         mContactEmailEditText = (EditText) findViewById(R.id.edit_supplier_email);
         mAddImage = (Button) findViewById(R.id.add_image);
+        mOrder = (Button) findViewById(R.id.email_button);
 
 
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
@@ -200,6 +206,39 @@ public class EditorActivity extends AppCompatActivity implements
 
                 //We will invoke this activity and get something back from it
                 startActivityForResult(openPhotoGallery, IMAGE_GALLERY_REQUEST);
+            }
+
+        });
+
+        //Open camera when you press on Add image button
+        mOrder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Invoke an implicit intent to send an email
+                Intent emailIntent = new Intent(Intent.ACTION_SENDTO);
+
+                String to = mContactEmailEditText.getText().toString();
+                String albumName = mAlbumNameEditText.getText().toString();
+                String bandName = mBandNameEditText.getText().toString();
+                String subject = "Order: " + albumName + " by " + bandName;
+                String supplier = mContactNameEditText.getText().toString();
+                String sep = System.getProperty("line.separator");
+
+                String message = "Dear " + supplier + "," + sep + "I would like to order 10 more copies of " + albumName + " by " + bandName + "." + sep + "Regards," + sep + "Gregorio";
+
+                emailIntent.setData(Uri.parse("mailto:" + to));
+                //email.putExtra(Intent.EXTRA_CC, new String[]{ to});
+                //email.putExtra(Intent.EXTRA_BCC, new String[]{to});
+                emailIntent.putExtra(Intent.EXTRA_SUBJECT, subject);
+                emailIntent.putExtra(Intent.EXTRA_TEXT, message);
+
+                try {
+                    startActivity(emailIntent);
+                    finish();
+                    Log.i(LOG_TAG, "Finished sending email...");
+                } catch (android.content.ActivityNotFoundException ex) {
+                    Toast.makeText(EditorActivity.this, "There is no email client installed.", Toast.LENGTH_SHORT).show();
+                }
             }
 
         });
