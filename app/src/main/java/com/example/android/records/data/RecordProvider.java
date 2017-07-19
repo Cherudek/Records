@@ -23,6 +23,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.android.records.data.RecordContract.RecordEntry;
 
@@ -145,42 +146,49 @@ public class RecordProvider extends ContentProvider {
         // Check that the album name is not null
         String albumName = values.getAsString(RecordContract.RecordEntry.COLUMN_ALBUM_NAME);
         if (albumName == null) {
+            Toast.makeText(getContext(), "Record requires an album name", Toast.LENGTH_LONG).show();
             throw new IllegalArgumentException("Record requires an album name");
         }
 
         // Check that the album name is not null
         String bandName = values.getAsString(RecordEntry.COLUMN_BAND_NAME);
         if (bandName == null) {
+            Toast.makeText(getContext(), "Record requires a band name", Toast.LENGTH_LONG).show();
             throw new IllegalArgumentException("Record requires a band name");
         }
 
         // Check that the quantity is not null
         Integer quantity = values.getAsInteger(RecordEntry.COLUMN_QUANTITY);
         if (quantity == null && quantity < 0) {
+            Toast.makeText(getContext(), "Record requires a quantity", Toast.LENGTH_LONG).show();
             throw new IllegalArgumentException("Record requires a quantity");
         }
 
         // If the price is provided, check that it's greater than or equal to 0 £
         Integer price = values.getAsInteger(RecordContract.RecordEntry.COLUMN_PRICE);
         if (price != null && price < 0) {
+            Toast.makeText(getContext(), "Record requires a valid price", Toast.LENGTH_LONG).show();
             throw new IllegalArgumentException("Record requires valid price");
         }
 
         // Check that the record image is not null
         String recordCover = values.getAsString(RecordEntry.COLUMN_RECORD_COVER);
         if (recordCover == null) {
+            Toast.makeText(getContext(), "Record requires an image", Toast.LENGTH_LONG).show();
             throw new IllegalArgumentException("Record requires an image");
         }
 
         // Check that the record contact supplier name is not null
         String supplierName = values.getAsString(RecordEntry.COLUMN_SUPPLIER_NAME);
         if (supplierName == null) {
+            Toast.makeText(getContext(), "Record requires a supplier contact name", Toast.LENGTH_LONG).show();
             throw new IllegalArgumentException("Record requires a supplier contact name");
         }
 
         // Check that the record contact supplier email is not null
         String supplierEmail = values.getAsString(RecordEntry.COLUMN_SUPPLIER_EMAIL);
         if (supplierEmail == null) {
+            Toast.makeText(getContext(), "Record requires a supplier contact email", Toast.LENGTH_LONG).show();
             throw new IllegalArgumentException("Record requires a supplier contact email");
         }
 

@@ -55,10 +55,10 @@ public class RecordDbHelper extends SQLiteOpenHelper {
                 + RecordEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + RecordEntry.COLUMN_ALBUM_NAME + " TEXT NOT NULL, "
                 + RecordEntry.COLUMN_BAND_NAME + " TEXT NOT NULL, "
-                + RecordContract.RecordEntry.COLUMN_QUANTITY + " INTEGER NOT NULL DEFAULT 0, "
-                + RecordEntry.COLUMN_PRICE + " INTEGER NOT NULL DEFAULT 0 "
-                + RecordEntry.COLUMN_RECORD_COVER + " TEXT NOT NULL "
-                + RecordEntry.COLUMN_SUPPLIER_NAME + " TEXT NOT NULL "
+                + RecordEntry.COLUMN_QUANTITY + " INTEGER NOT NULL DEFAULT 0, "
+                + RecordEntry.COLUMN_PRICE + " INTEGER NOT NULL DEFAULT 0, "
+                + RecordEntry.COLUMN_RECORD_COVER + " TEXT NOT NULL, "
+                + RecordEntry.COLUMN_SUPPLIER_NAME + " TEXT NOT NULL, "
                 + RecordEntry.COLUMN_SUPPLIER_EMAIL + " TEXT NOT NULL);";
 
 

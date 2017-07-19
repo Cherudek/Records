@@ -245,7 +245,7 @@ public class EditorActivity extends AppCompatActivity implements
         String supplierNameString = mContactNameEditText.getText().toString().trim();
         String supplierEmailString = mContactEmailEditText.getText().toString().trim();
 
-        String albumCoverString = imagePath;
+        String albumCoverString = mRecordCover.toString();
 
 
         // Check if this is supposed to be a new record
@@ -253,7 +253,7 @@ public class EditorActivity extends AppCompatActivity implements
         if (mCurrentRecordUri == null &&
                 TextUtils.isEmpty(albumNameString) && TextUtils.isEmpty(bandNameString) &&
                 TextUtils.isEmpty(quantityString) && TextUtils.isEmpty(priceString) &&
-                //TextUtils.isEmpty(albumCoverString) && TextUtils.isEmpty(supplierNameString) &&
+                TextUtils.isEmpty(albumCoverString) && TextUtils.isEmpty(supplierNameString) &&
                 TextUtils.isEmpty(supplierEmailString)) {
             // Since no fields were modified, we can return early without creating a new pet.
             // No need to create ContentValues and no need to do any ContentProvider operations.
@@ -263,7 +263,7 @@ public class EditorActivity extends AppCompatActivity implements
         // Create a ContentValues object where column names are the keys,
         // and record attributes from the editor are the values.
         ContentValues values = new ContentValues();
-        values.put(RecordContract.RecordEntry.COLUMN_ALBUM_NAME, albumNameString);
+        values.put(RecordEntry.COLUMN_ALBUM_NAME, albumNameString);
         values.put(RecordEntry.COLUMN_BAND_NAME, bandNameString);
         // If the weight is not provided by the user, don't try to parse the string into an
         // integer value. Use 0 by default.

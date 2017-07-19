@@ -115,7 +115,7 @@ public class CatalogActivity extends AppCompatActivity implements
         values.put(RecordEntry.COLUMN_BAND_NAME, "Europe");
         values.put(RecordEntry.COLUMN_QUANTITY, 10);
         values.put(RecordEntry.COLUMN_PRICE, 10);
-        values.put(RecordEntry.COLUMN_RECORD_COVER, "");
+        values.put(RecordEntry.COLUMN_RECORD_COVER, R.mipmap.add_record_cover);
         values.put(RecordEntry.COLUMN_SUPPLIER_NAME, "Bleep");
         values.put(RecordEntry.COLUMN_SUPPLIER_EMAIL, "support@bleep.com");
 
