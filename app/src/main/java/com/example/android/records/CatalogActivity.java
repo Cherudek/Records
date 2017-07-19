@@ -110,14 +110,17 @@ public class CatalogActivity extends AppCompatActivity implements
     private void insertRecord() {
         // Create a ContentValues object where column names are the keys,
         // and Final Countdown's attributes are the values.
+
+        String dummyImage = "drawable://" + R.drawable.the_final_countdown_single;
+
         ContentValues values = new ContentValues();
         values.put(RecordEntry.COLUMN_ALBUM_NAME, "Final Countdown");
         values.put(RecordEntry.COLUMN_BAND_NAME, "Europe");
         values.put(RecordEntry.COLUMN_QUANTITY, 10);
-        values.put(RecordEntry.COLUMN_PRICE, 10);
-        values.put(RecordEntry.COLUMN_RECORD_COVER, R.mipmap.add_record_cover);
-        values.put(RecordEntry.COLUMN_SUPPLIER_NAME, "Bleep");
-        values.put(RecordEntry.COLUMN_SUPPLIER_EMAIL, "support@bleep.com");
+        values.put(RecordEntry.COLUMN_PRICE, 5);
+        values.put(RecordEntry.COLUMN_RECORD_COVER, dummyImage);
+        values.put(RecordEntry.COLUMN_SUPPLIER_NAME, "Virgin");
+        values.put(RecordEntry.COLUMN_SUPPLIER_EMAIL, "order@virgin.com");
 
 
         // Insert a new row for Final CountDown into the provider using the ContentResolver.

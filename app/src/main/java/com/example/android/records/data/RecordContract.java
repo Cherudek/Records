@@ -85,14 +85,14 @@ public final class RecordContract {
          *
          * Type: TEXT
          */
-        public final static String COLUMN_ALBUM_NAME ="album name";
+        public final static String COLUMN_ALBUM_NAME = "album_name";
 
         /**
          * Band Name.
          *
          * Type: TEXT
          */
-        public final static String COLUMN_BAND_NAME = "band name";
+        public final static String COLUMN_BAND_NAME = "band_name";
 
         /**
          * Quantity of records.

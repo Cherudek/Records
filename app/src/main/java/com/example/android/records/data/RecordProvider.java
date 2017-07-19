@@ -144,7 +144,7 @@ public class RecordProvider extends ContentProvider {
      */
     private Uri insertRecord(Uri uri, ContentValues values) {
         // Check that the album name is not null
-        String albumName = values.getAsString(RecordContract.RecordEntry.COLUMN_ALBUM_NAME);
+        String albumName = values.getAsString(RecordEntry.COLUMN_ALBUM_NAME);
         if (albumName == null) {
             Toast.makeText(getContext(), "Record requires an album name", Toast.LENGTH_LONG).show();
             throw new IllegalArgumentException("Record requires an album name");
@@ -165,7 +165,7 @@ public class RecordProvider extends ContentProvider {
         }
 
         // If the price is provided, check that it's greater than or equal to 0 £
-        Integer price = values.getAsInteger(RecordContract.RecordEntry.COLUMN_PRICE);
+        Integer price = values.getAsInteger(RecordEntry.COLUMN_PRICE);
         if (price != null && price < 0) {
             Toast.makeText(getContext(), "Record requires a valid price", Toast.LENGTH_LONG).show();
             throw new IllegalArgumentException("Record requires valid price");

@@ -32,6 +32,7 @@ import android.os.Environment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -41,7 +42,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.android.records.data.RecordContract;
 import com.example.android.records.data.RecordContract.RecordEntry;
 
 import java.io.File;
@@ -53,23 +53,36 @@ import java.io.InputStream;
 public class EditorActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
+    public static final String LOG_TAG = EditorActivity.class.getSimpleName();
+
+
     /**
      * Identifier for the record album image data loader
      */
     public static final int IMAGE_GALLERY_REQUEST = 20;
+
     /** Identifier for the record data loader */
     private static final int EXISTING_RECORD_LOADER = 0;
     /**
      * Identifier for the record album image URI loader
      */
     private static final String STATE_IMAGE_URI = "STATE_IMAGE_URI";
+
+
     final Context mContext = this;
     /**
      * Content URI for the existing record cover image(null if it's a new record)
      */
     private Uri mImageUri;
+
+    /**
+     * Image Path of the record fetched from the Uri
+     */
     private String imagePath;
+
+    /** Bitmap value of the image fetched from the Uri */
     private Bitmap image;
+
     /** Content URI for the existing record (null if it's a new record) */
     private Uri mCurrentRecordUri;
 
@@ -87,17 +100,16 @@ public class EditorActivity extends AppCompatActivity implements
 
     /** ImageView field to insert the Record Cover */
     private ImageView mRecordCover;
-
     /**
      * EditText field to enter the Record supplier Name
      */
     private EditText mContactNameEditText;
-
     /**
      * EditText field to enter the Record supplier Email
      */
     private EditText mContactEmailEditText;
 
+    /** Button to add an image to the edit record activity */
     private Button mAddImage;
 
 
@@ -167,7 +179,7 @@ public class EditorActivity extends AppCompatActivity implements
         mContactEmailEditText.setOnTouchListener(mTouchListener);
 
 
-        //Open camera when you press on image
+        //Open camera when you press on Add image button
         mAddImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -177,10 +189,10 @@ public class EditorActivity extends AppCompatActivity implements
                 //Where do we find the data?
                 File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
 
-
+                //Get a String of the pictureDirectoryPath
                 String pictureDirectoryPath = pictureDirectory.getPath();
 
-                //Get the Uri rapresentation
+                //Get the Uri representation
                 Uri data = Uri.parse(pictureDirectoryPath);
 
                 //Set the data and type
@@ -188,7 +200,6 @@ public class EditorActivity extends AppCompatActivity implements
 
                 //We will invoke this activity and get something back from it
                 startActivityForResult(openPhotoGallery, IMAGE_GALLERY_REQUEST);
-
             }
 
         });
@@ -197,15 +208,14 @@ public class EditorActivity extends AppCompatActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
 
-            //if we are here our request was succesfull
+            //if we are here our request was successful
             if (requestCode == IMAGE_GALLERY_REQUEST) {
-
                 //if we are here we hearing back from the image gallery
 
                 //this is the address of the image on the sd cards
                 Uri mImageUri = data.getData();
 
-                String imagePath = mImageUri.toString();
+                imagePath = mImageUri.toString();
 
                 //Declare a stream to read the data from the card
                 InputStream inputStream;
@@ -215,7 +225,7 @@ public class EditorActivity extends AppCompatActivity implements
                     inputStream = getContentResolver().openInputStream(mImageUri);
 
                     //Get a bitmap from the stream
-                    Bitmap image = BitmapFactory.decodeStream(inputStream);
+                    image = BitmapFactory.decodeStream(inputStream);
 
                     //Show the image to the user
                     mRecordCover.setImageBitmap(image);
@@ -245,7 +255,8 @@ public class EditorActivity extends AppCompatActivity implements
         String supplierNameString = mContactNameEditText.getText().toString().trim();
         String supplierEmailString = mContactEmailEditText.getText().toString().trim();
 
-        String albumCoverString = mRecordCover.toString();
+        String albumCoverString = imagePath.toString();
+        Log.i(LOG_TAG, "TEST: Album Cover string is: " + albumCoverString);
 
 
         // Check if this is supposed to be a new record
@@ -367,7 +378,6 @@ public class EditorActivity extends AppCompatActivity implements
                     NavUtils.navigateUpFromSameTask(EditorActivity.this);
                     return true;
                 }
-
                 // Otherwise if there are unsaved changes, setup a dialog to warn the user.
                 // Create a click listener to handle the user confirming that
                 // changes should be discarded.
@@ -379,7 +389,6 @@ public class EditorActivity extends AppCompatActivity implements
                                 NavUtils.navigateUpFromSameTask(EditorActivity.this);
                             }
                         };
-
                 // Show a dialog that notifies the user they have unsaved changes
                 showUnsavedChangesDialog(discardButtonClickListener);
                 return true;
@@ -419,9 +428,9 @@ public class EditorActivity extends AppCompatActivity implements
         // all columns from the pet table
         String[] projection = {
                 RecordEntry._ID,
-                RecordContract.RecordEntry.COLUMN_ALBUM_NAME,
+                RecordEntry.COLUMN_ALBUM_NAME,
                 RecordEntry.COLUMN_BAND_NAME,
-                RecordContract.RecordEntry.COLUMN_QUANTITY,
+                RecordEntry.COLUMN_QUANTITY,
                 RecordEntry.COLUMN_PRICE,
                 RecordEntry.COLUMN_RECORD_COVER,
                 RecordEntry.COLUMN_SUPPLIER_NAME,
@@ -429,7 +438,7 @@ public class EditorActivity extends AppCompatActivity implements
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
-                mCurrentRecordUri,         // Query the content URI for the current pet
+                mCurrentRecordUri,      // Query the content URI for the current record
                 projection,             // Columns to include in the resulting Cursor
                 null,                   // No selection clause
                 null,                   // No selection arguments
@@ -448,7 +457,7 @@ public class EditorActivity extends AppCompatActivity implements
         if (cursor.moveToFirst()) {
             // Find the columns of pet attributes that we're interested in
             int albumNameColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_ALBUM_NAME);
-            int bandNameColumnIndex = cursor.getColumnIndex(RecordContract.RecordEntry.COLUMN_BAND_NAME);
+            int bandNameColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_BAND_NAME);
             int quantityColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_QUANTITY);
             int priceColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_PRICE);
             int imageColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_RECORD_COVER);
@@ -476,7 +485,7 @@ public class EditorActivity extends AppCompatActivity implements
             mRecordCover.setImageBitmap(image);
 
             mContactNameEditText.setText(supplierName);
-            mContactNameEditText.setText(supplierEmail);
+            mContactEmailEditText.setText(supplierEmail);
 
         }
     }
@@ -486,8 +495,8 @@ public class EditorActivity extends AppCompatActivity implements
         // If the loader is invalidated, clear out all the data from the input fields.
         mAlbumNameEditText.setText("");
         mBandNameEditText.setText("");
-        mQuantityEditText.setText("0");
-        mPriceEditText.setText("0£");
+        mQuantityEditText.setText("");
+        mPriceEditText.setText("");
         mRecordCover.setImageResource(R.mipmap.add_record_cover);
         mContactNameEditText.setText("");
         mContactEmailEditText.setText("");}
