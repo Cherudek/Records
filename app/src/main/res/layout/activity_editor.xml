@@ -131,10 +131,25 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <!-- Cover  category -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- Cover  category -->
         <TextView
-            style="@style/CategoryStyle"
+            style="@style/CategoryStyleCover"
             android:text="@string/category_album_cover" />
+
+
+            <Button
+                android:id="@+id/add_image"
+                style="@style/PlusMinusButtonStyle"
+                android:layout_gravity="center"
+                android:text="@string/plus" />
+
+        </LinearLayout>
 
         <ImageView
             android:id="@+id/edit_image_cover"

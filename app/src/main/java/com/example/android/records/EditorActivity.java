@@ -18,13 +18,17 @@ package com.example.android.records;
 import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -32,6 +36,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -39,15 +44,32 @@ import android.widget.Toast;
 import com.example.android.records.data.RecordContract;
 import com.example.android.records.data.RecordContract.RecordEntry;
 
+import java.io.File;
+import java.io.InputStream;
+
 /**
  * Allows user to create a new record or edit an existing one.
  */
 public class EditorActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
+    /**
+     * Identifier for the record album image data loader
+     */
+    public static final int IMAGE_GALLERY_REQUEST = 20;
     /** Identifier for the record data loader */
     private static final int EXISTING_RECORD_LOADER = 0;
-
+    /**
+     * Identifier for the record album image URI loader
+     */
+    private static final String STATE_IMAGE_URI = "STATE_IMAGE_URI";
+    final Context mContext = this;
+    /**
+     * Content URI for the existing record cover image(null if it's a new record)
+     */
+    private Uri mImageUri;
+    private String imagePath;
+    private Bitmap image;
     /** Content URI for the existing record (null if it's a new record) */
     private Uri mCurrentRecordUri;
 
@@ -75,6 +97,8 @@ public class EditorActivity extends AppCompatActivity implements
      * EditText field to enter the Record supplier Email
      */
     private EditText mContactEmailEditText;
+
+    private Button mAddImage;
 
 
     /** Boolean flag that keeps track of whether the record has been edited (true) or not (false) */
@@ -126,7 +150,9 @@ public class EditorActivity extends AppCompatActivity implements
         mQuantityEditText = (EditText) findViewById(R.id.edit_quantity);
         mPriceEditText = (EditText) findViewById(R.id.edit_price);
         mRecordCover = (ImageView) findViewById(R.id.edit_image_cover);
-        mContactEditText = (EditText)findViewById();
+        mContactNameEditText = (EditText) findViewById(R.id.edit_supplier_name);
+        mContactEmailEditText = (EditText) findViewById(R.id.edit_supplier_email);
+        mAddImage = (Button) findViewById(R.id.add_image);
 
 
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
@@ -137,53 +163,130 @@ public class EditorActivity extends AppCompatActivity implements
         mQuantityEditText.setOnTouchListener(mTouchListener);
         mPriceEditText.setOnTouchListener(mTouchListener);
         mRecordCover.setOnTouchListener(mTouchListener);
+        mContactNameEditText.setOnTouchListener(mTouchListener);
+        mContactEmailEditText.setOnTouchListener(mTouchListener);
 
+
+        //Open camera when you press on image
+        mAddImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Invoke an implicit intent to open the photo gallery
+                Intent openPhotoGallery = new Intent(Intent.ACTION_PICK);
+
+                //Where do we find the data?
+                File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+
+
+                String pictureDirectoryPath = pictureDirectory.getPath();
+
+                //Get the Uri rapresentation
+                Uri data = Uri.parse(pictureDirectoryPath);
+
+                //Set the data and type
+                openPhotoGallery.setDataAndType(data, "image/*");
+
+                //We will invoke this activity and get something back from it
+                startActivityForResult(openPhotoGallery, IMAGE_GALLERY_REQUEST);
+
+            }
+
+        });
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+
+            //if we are here our request was succesfull
+            if (requestCode == IMAGE_GALLERY_REQUEST) {
+
+                //if we are here we hearing back from the image gallery
+
+                //this is the address of the image on the sd cards
+                Uri mImageUri = data.getData();
+
+                String imagePath = mImageUri.toString();
+
+                //Declare a stream to read the data from the card
+                InputStream inputStream;
+
+                try {
+                    //We are getting an input stream based on the Uri of the image
+                    inputStream = getContentResolver().openInputStream(mImageUri);
+
+                    //Get a bitmap from the stream
+                    Bitmap image = BitmapFactory.decodeStream(inputStream);
+
+                    //Show the image to the user
+                    mRecordCover.setImageBitmap(image);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+
+                    //Show the user a Toast mewssage that the Image is not available
+                    Toast.makeText(EditorActivity.this, "Unable to open image", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
 
     }
 
 
     /**
-     * Get user input from editor and save pet into database.
+     * Get user input from editor and save record into database.
      */
     private void saveRecord() {
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
-        String albumNameString = mAlbumNameEditText.getText().toString();
-        String bandNameString = mBandNameEditText.getText().toString();
-        String quantityString = mQuantityEditText.getText().toString();
-        String priceString = mPriceEditText.getText().toString();
-       // String albumCoverString = mRecordCover.getId().toString();
-        String supplierContactString =
+        String albumNameString = mAlbumNameEditText.getText().toString().trim();
+        String bandNameString = mBandNameEditText.getText().toString().trim();
+        String quantityString = mQuantityEditText.getText().toString().trim();
+        String priceString = mPriceEditText.getText().toString().trim();
+        String supplierNameString = mContactNameEditText.getText().toString().trim();
+        String supplierEmailString = mContactEmailEditText.getText().toString().trim();
+
+        String albumCoverString = imagePath;
 
 
-
-        // Check if this is supposed to be a new pet
+        // Check if this is supposed to be a new record
         // and check if all the fields in the editor are blank
         if (mCurrentRecordUri == null &&
                 TextUtils.isEmpty(albumNameString) && TextUtils.isEmpty(bandNameString) &&
-                TextUtils.isEmpty(quantityString) && mGender == RecordEntry.GENDER_UNKNOWN) {
+                TextUtils.isEmpty(quantityString) && TextUtils.isEmpty(priceString) &&
+                //TextUtils.isEmpty(albumCoverString) && TextUtils.isEmpty(supplierNameString) &&
+                TextUtils.isEmpty(supplierEmailString)) {
             // Since no fields were modified, we can return early without creating a new pet.
             // No need to create ContentValues and no need to do any ContentProvider operations.
             return;
         }
 
         // Create a ContentValues object where column names are the keys,
-        // and pet attributes from the editor are the values.
+        // and record attributes from the editor are the values.
         ContentValues values = new ContentValues();
         values.put(RecordContract.RecordEntry.COLUMN_ALBUM_NAME, albumNameString);
         values.put(RecordEntry.COLUMN_BAND_NAME, bandNameString);
-        values.put(RecordEntry.COLUMN_QUANTITY, mGender);
         // If the weight is not provided by the user, don't try to parse the string into an
         // integer value. Use 0 by default.
-        int weight = 0;
+        int quantity = 0;
         if (!TextUtils.isEmpty(quantityString)) {
-            weight = Integer.parseInt(quantityString);
+            quantity = Integer.parseInt(quantityString);
         }
-        values.put(RecordEntry.COLUMN_PRICE, weight);
+        values.put(RecordEntry.COLUMN_QUANTITY, quantity);
+        // If the price is not provided by the user, don't try to parse the string into an
+        // integer value. Use 0 by default.
+        int price = 0;
+        if (!TextUtils.isEmpty(priceString)) {
+            price = Integer.parseInt(priceString);
+        }
+        values.put(RecordEntry.COLUMN_PRICE, price);
+        values.put(RecordEntry.COLUMN_RECORD_COVER, albumCoverString);
+        values.put(RecordEntry.COLUMN_SUPPLIER_NAME, supplierNameString);
+        values.put(RecordEntry.COLUMN_SUPPLIER_EMAIL, supplierEmailString );
+
 
         // Determine if this is a new or existing pet by checking if mCurrentRecordUri is null or not
         if (mCurrentRecordUri == null) {
-            // This is a NEW pet, so insert a new pet into the provider,
+            // This is a NEW pet, so insert a new record into the provider,
             // returning the content URI for the new pet.
             Uri newUri = getContentResolver().insert(RecordEntry.CONTENT_URI, values);
 
@@ -289,7 +392,7 @@ public class EditorActivity extends AppCompatActivity implements
      */
     @Override
     public void onBackPressed() {
-        // If the pet hasn't changed, continue with handling back button press
+        // If the record hasn't changed, continue with handling back button press
         if (!mRecordHasChanged) {
             super.onBackPressed();
             return;
@@ -312,14 +415,17 @@ public class EditorActivity extends AppCompatActivity implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        // Since the editor shows all pet attributes, define a projection that contains
+        // Since the editor shows all record attributes, define a projection that contains
         // all columns from the pet table
         String[] projection = {
                 RecordEntry._ID,
                 RecordContract.RecordEntry.COLUMN_ALBUM_NAME,
                 RecordEntry.COLUMN_BAND_NAME,
                 RecordContract.RecordEntry.COLUMN_QUANTITY,
-                RecordEntry.COLUMN_PRICE};
+                RecordEntry.COLUMN_PRICE,
+                RecordEntry.COLUMN_RECORD_COVER,
+                RecordEntry.COLUMN_SUPPLIER_NAME,
+                RecordEntry.COLUMN_SUPPLIER_EMAIL};
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
@@ -341,36 +447,37 @@ public class EditorActivity extends AppCompatActivity implements
         // (This should be the only row in the cursor)
         if (cursor.moveToFirst()) {
             // Find the columns of pet attributes that we're interested in
-            int nameColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_ALBUM_NAME);
-            int breedColumnIndex = cursor.getColumnIndex(RecordContract.RecordEntry.COLUMN_BAND_NAME);
-            int genderColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_QUANTITY);
-            int weightColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_PRICE);
+            int albumNameColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_ALBUM_NAME);
+            int bandNameColumnIndex = cursor.getColumnIndex(RecordContract.RecordEntry.COLUMN_BAND_NAME);
+            int quantityColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_QUANTITY);
+            int priceColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_PRICE);
+            int imageColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_RECORD_COVER);
+            int supplierNameColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_SUPPLIER_NAME);
+            int supplierEmailColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_SUPPLIER_EMAIL);
+
 
             // Extract out the value from the Cursor for the given column index
-            String name = cursor.getString(nameColumnIndex);
-            String breed = cursor.getString(breedColumnIndex);
-            int gender = cursor.getInt(genderColumnIndex);
-            int weight = cursor.getInt(weightColumnIndex);
+            String albumName = cursor.getString(albumNameColumnIndex);
+            String bandName = cursor.getString(bandNameColumnIndex);
+            int quantity = cursor.getInt(quantityColumnIndex);
+            int price = cursor.getInt(priceColumnIndex);
+            String cover = cursor.getString(imageColumnIndex);
+            String supplierName = cursor.getString(supplierNameColumnIndex);
+            String supplierEmail = cursor.getString(supplierEmailColumnIndex);
+
 
             // Update the views on the screen with the values from the database
-            mAlbumNameEditText.setText(name);
-            mBandNameEditText.setText(breed);
-            mQuantityEditText.setText(Integer.toString(weight));
+            mAlbumNameEditText.setText(albumName);
+            mBandNameEditText.setText(bandName);
+            mQuantityEditText.setText(Integer.toString(quantity));
+            mPriceEditText.setText(Integer.toString(price));
 
-            // Gender is a dropdown spinner, so map the constant value from the database
-            // into one of the dropdown options (0 is Unknown, 1 is Male, 2 is Female).
-            // Then call setSelection() so that option is displayed on screen as the current selection.
-            switch (gender) {
-                case RecordContract.RecordEntry.GENDER_MALE:
-                    mPriceEditText.setSelection(1);
-                    break;
-                case RecordEntry.GENDER_FEMALE:
-                    mPriceEditText.setSelection(2);
-                    break;
-                default:
-                    mPriceEditText.setSelection(0);
-                    break;
-            }
+            mImageUri = Uri.parse(cover);
+            mRecordCover.setImageBitmap(image);
+
+            mContactNameEditText.setText(supplierName);
+            mContactNameEditText.setText(supplierEmail);
+
         }
     }
 
@@ -379,9 +486,11 @@ public class EditorActivity extends AppCompatActivity implements
         // If the loader is invalidated, clear out all the data from the input fields.
         mAlbumNameEditText.setText("");
         mBandNameEditText.setText("");
-        mQuantityEditText.setText("");
-        mPriceEditText.setSelection(0); // Select "Unknown" gender
-    }
+        mQuantityEditText.setText("0");
+        mPriceEditText.setText("0£");
+        mRecordCover.setImageResource(R.mipmap.add_record_cover);
+        mContactNameEditText.setText("");
+        mContactEmailEditText.setText("");}
 
     /**
      * Show a dialog that warns the user there are unsaved changes that will be lost
@@ -423,7 +532,7 @@ public class EditorActivity extends AppCompatActivity implements
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Delete" button, so delete the pet.
-                deletePet();
+                deleteRecord();
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -444,7 +553,7 @@ public class EditorActivity extends AppCompatActivity implements
     /**
      * Perform the deletion of the pet in the database.
      */
-    private void deletePet() {
+    private void deleteRecord() {
         // Only perform the delete if this is an existing pet.
         if (mCurrentRecordUri != null) {
             // Call the ContentResolver to delete the pet at the given content URI.

@@ -17,7 +17,6 @@ package com.example.android.records;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,8 +28,8 @@ import com.example.android.records.data.RecordContract.RecordEntry;
 
 /**
  * {@link RecordCursorAdapter} is an adapter for a list or grid view
- * that uses a {@link Cursor} of pet data as its data source. This adapter knows
- * how to create list items for each row of pet data in the {@link Cursor}.
+ * that uses a {@link Cursor} of record data as its data source. This adapter knows
+ * how to create list items for each row of record data in the {@link Cursor}.
  */
 public class RecordCursorAdapter extends CursorAdapter {
 
@@ -60,8 +59,8 @@ public class RecordCursorAdapter extends CursorAdapter {
     }
 
     /**
-     * This method binds the pet data (in the current row pointed to by cursor) to the given
-     * list item layout. For example, the name for the current pet can be set on the name TextView
+     * This method binds the record data (in the current row pointed to by cursor) to the given
+     * list item layout. For example, the name for the current record can be set on the name TextView
      * in the list item layout.
      *
      * @param view    Existing view, returned earlier by newView() method
@@ -72,25 +71,28 @@ public class RecordCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         // Find individual views that we want to modify in the list item layout
-        TextView nameTextView = (TextView) view.findViewById(R.id.name);
-        TextView summaryTextView = (TextView) view.findViewById(R.id.summary);
+        TextView albumNameTextView = (TextView) view.findViewById(R.id.album_name);
+        TextView bandNameTextView = (TextView) view.findViewById(R.id.band_name);
+        TextView quantityTextView = (TextView) view.findViewById(R.id.quantiy);
+        TextView priceTextView = (TextView) view.findViewById(R.id.price);
 
-        // Find the columns of pet attributes that we're interested in
-        int nameColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_ALBUM_NAME);
-        int breedColumnIndex = cursor.getColumnIndex(RecordContract.RecordEntry.COLUMN_BAND_NAME);
+        // Find the columns of the record attributes that we're interested in
+        int albumNameColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_ALBUM_NAME);
+        int bandNameColumnIndex = cursor.getColumnIndex(RecordContract.RecordEntry.COLUMN_BAND_NAME);
+        int quantityColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_QUANTITY);
+        int priceNameColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_PRICE);
 
-        // Read the pet attributes from the Cursor for the current pet
-        String petName = cursor.getString(nameColumnIndex);
-        String petBreed = cursor.getString(breedColumnIndex);
+        // Read the record attributes from the Cursor for the current record
+        String albumName = cursor.getString(albumNameColumnIndex);
+        String bandName = cursor.getString(bandNameColumnIndex);
+        String quantity = cursor.getString(quantityColumnIndex);
+        String price = cursor.getString(priceNameColumnIndex);
 
-        // If the pet breed is empty string or null, then use some default text
-        // that says "Unknown breed", so the TextView isn't blank.
-        if (TextUtils.isEmpty(petBreed)) {
-            petBreed = context.getString(R.string.unknown_breed);
-        }
+        // Update the TextViews with the attributes for the current record
+        albumNameTextView.setText(albumName);
+        bandNameTextView.setText(bandName);
+        quantityTextView.setText(quantity);
+        priceTextView.setText(price);
 
-        // Update the TextViews with the attributes for the current pet
-        nameTextView.setText(petName);
-        summaryTextView.setText(petBreed);
     }
 }

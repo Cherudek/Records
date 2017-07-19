@@ -42,12 +42,10 @@ import com.example.android.records.data.RecordContract.RecordEntry;
  */
 public class CatalogActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
-
     /**
      * Identifier for the record data loader
      */
     private static final int RECORD_LOADER = 0;
-
     /**
      * Adapter for the ListView
      */
@@ -117,8 +115,9 @@ public class CatalogActivity extends AppCompatActivity implements
         values.put(RecordEntry.COLUMN_BAND_NAME, "Europe");
         values.put(RecordEntry.COLUMN_QUANTITY, 10);
         values.put(RecordEntry.COLUMN_PRICE, 10);
-        values.put(RecordEntry.COLUMN_RECORD_COVER, 101);
-        values.put(RecordEntry.COLUMN_SUPPLIER_CONTACT, "support@bleep.com");
+        values.put(RecordEntry.COLUMN_RECORD_COVER, "");
+        values.put(RecordEntry.COLUMN_SUPPLIER_NAME, "Bleep");
+        values.put(RecordEntry.COLUMN_SUPPLIER_EMAIL, "support@bleep.com");
 
 
         // Insert a new row for Final CountDown into the provider using the ContentResolver.

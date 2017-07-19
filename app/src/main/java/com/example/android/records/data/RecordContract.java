@@ -111,7 +111,7 @@ public final class RecordContract {
         /**
          * Cover of the Record.
          *
-         * Type: INTEGER
+         * Type: TEXT
          */
         public final static String COLUMN_RECORD_COVER = "cover";
 

@@ -167,8 +167,8 @@ public class RecordProvider extends ContentProvider {
         }
 
         // Check that the record image is not null
-        Integer recordCOver = values.getAsInteger(RecordEntry.COLUMN_RECORD_COVER);
-        if (recordCOver == null) {
+        String recordCover = values.getAsString(RecordEntry.COLUMN_RECORD_COVER);
+        if (recordCover == null) {
             throw new IllegalArgumentException("Record requires an image");
         }
 
@@ -253,8 +253,8 @@ public class RecordProvider extends ContentProvider {
         }
 
         // Check that the record image is not null
-        Integer recordCOver = values.getAsInteger(RecordEntry.COLUMN_RECORD_COVER);
-        if (recordCOver == null) {
+        String recordCover = values.getAsString(RecordEntry.COLUMN_RECORD_COVER);
+        if (recordCover == null) {
             throw new IllegalArgumentException("Record requires an image");
         }
 

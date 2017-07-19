@@ -87,7 +87,7 @@
     <string name="category_price">Price</string>
 
     <!-- Label for album cover information in the editor [CHAR LIMIT=30] -->
-    <string name="category_album_cover">Cover</string>
+    <string name="category_album_cover">Add a Image</string>
 
     <!-- Label for measurement information in the editor [CHAR LIMIT=30] -->
     <string name="category_supplier_name">Supplier</string>
