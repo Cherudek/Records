@@ -1,4 +1,4 @@
-package com.example.android.records;
+package com.example.android.records.data;
 
 import android.app.Application;
 

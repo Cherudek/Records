@@ -37,6 +37,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -45,6 +46,8 @@ import android.widget.Toast;
 import com.example.android.records.data.RecordContract.RecordEntry;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 
 /**
@@ -70,6 +73,7 @@ public class EditorActivity extends AppCompatActivity implements
 
 
     final Context mContext = this;
+
     /**
      * Content URI for the existing record cover image(null if it's a new record)
      */
@@ -190,7 +194,7 @@ public class EditorActivity extends AppCompatActivity implements
             @Override
             public void onClick(View v) {
                 //Invoke an implicit intent to open the photo gallery
-                Intent openPhotoGallery = new Intent(Intent.ACTION_PICK);
+                Intent openPhotoGallery = new Intent(Intent.ACTION_OPEN_DOCUMENT);
 
                 //Where do we find the data?
                 File pictureDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
@@ -224,7 +228,7 @@ public class EditorActivity extends AppCompatActivity implements
                 String supplier = mContactNameEditText.getText().toString();
                 String sep = System.getProperty("line.separator");
 
-                String message = "Dear " + supplier + "," + sep + "I would like to order 10 more copies of " + albumName + " by " + bandName + "." + sep + "Regards," + sep + "Gregorio";
+                String message = "Dear " + supplier + "," + sep + "I would like to order 10 more copies of " + albumName + " by " + bandName + " . " + sep + "Regards," + sep + "Gregorio";
 
                 emailIntent.setData(Uri.parse("mailto:" + to));
                 //email.putExtra(Intent.EXTRA_CC, new String[]{ to});
@@ -244,22 +248,53 @@ public class EditorActivity extends AppCompatActivity implements
         });
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (mImageUri != null)
+            outState.putString(STATE_IMAGE_URI, mImageUri.toString());
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if (savedInstanceState.containsKey(STATE_IMAGE_URI) &&
+                !savedInstanceState.getString(STATE_IMAGE_URI).equals("")) {
+            mImageUri = Uri.parse(savedInstanceState.getString(STATE_IMAGE_URI));
+
+            ViewTreeObserver viewTreeObserver = mRecordCover.getViewTreeObserver();
+            viewTreeObserver.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    mRecordCover.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    mRecordCover.setImageBitmap(getBitmapFromUri(mImageUri, mContext, mRecordCover));
+                }
+            });
+
+
+        }
+    }
+
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
+
 
             //if we are here our request was successful
-            if (requestCode == IMAGE_GALLERY_REQUEST) {
-                //if we are here we hearing back from the image gallery
+        if (requestCode == IMAGE_GALLERY_REQUEST && (resultCode == RESULT_OK)) {
+
+            try {
 
                 //this is the address of the image on the sd cards
-                Uri mImageUri = data.getData();
+                mImageUri = data.getData();
 
+                int takeFlags = data.getFlags();
+                takeFlags &= (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                 imagePath = mImageUri.toString();
 
                 //Declare a stream to read the data from the card
                 InputStream inputStream;
 
-                try {
                     //We are getting an input stream based on the Uri of the image
                     inputStream = getContentResolver().openInputStream(mImageUri);
 
@@ -268,6 +303,19 @@ public class EditorActivity extends AppCompatActivity implements
 
                     //Show the image to the user
                     mRecordCover.setImageBitmap(image);
+
+                imagePath = mImageUri.toString();
+
+                try {
+                    getContentResolver().takePersistableUriPermission(mImageUri, takeFlags);
+
+
+                } catch (SecurityException e) {
+                    e.printStackTrace();
+                }
+                mRecordCover.setImageBitmap(getBitmapFromUri(mImageUri, mContext, mRecordCover));
+
+
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -278,8 +326,70 @@ public class EditorActivity extends AppCompatActivity implements
             }
         }
 
+
+    /**
+     * Method to add clear top flag so it doesn't create new instance of parent
+     *
+     * @return intent
+     */
+    @Override
+    public Intent getSupportParentActivityIntent() {
+        Intent intent = super.getSupportParentActivityIntent();
+        if (intent != null) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        }
+        return intent;
     }
 
+    public Bitmap getBitmapFromUri(Uri uri, Context context, ImageView imageView) {
+
+        if (uri == null || uri.toString().isEmpty())
+            return null;
+
+        // Get the dimensions of the View
+        int targetW = imageView.getWidth();
+        int targetH = imageView.getHeight();
+
+        InputStream input = null;
+        try {
+            input = this.getContentResolver().openInputStream(uri);
+
+            // Get the dimensions of the bitmap
+            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+            bmOptions.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(input, null, bmOptions);
+            input.close();
+
+            int photoW = bmOptions.outWidth;
+            int photoH = bmOptions.outHeight;
+
+            // Determine how much to scale down the image
+            int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
+
+            // Decode the image file into a Bitmap sized to fill the View
+            bmOptions.inJustDecodeBounds = false;
+            bmOptions.inSampleSize = scaleFactor;
+            bmOptions.inPurgeable = true;
+
+            input = this.getContentResolver().openInputStream(uri);
+            Bitmap bitmap = BitmapFactory.decodeStream(input, null, bmOptions);
+            input.close();
+            return bitmap;
+
+        } catch (FileNotFoundException fne) {
+            Log.e(LOG_TAG, "Failed to load image.", fne);
+            return null;
+        } catch (Exception e) {
+            Log.e(LOG_TAG, "Failed to load image.", e);
+            return null;
+        } finally {
+            try {
+                input.close();
+            } catch (IOException ioe) {
+
+            }
+        }
+    }
 
     /**
      * Get user input from editor and save record into database.
@@ -509,7 +619,7 @@ public class EditorActivity extends AppCompatActivity implements
             String bandName = cursor.getString(bandNameColumnIndex);
             int quantity = cursor.getInt(quantityColumnIndex);
             int price = cursor.getInt(priceColumnIndex);
-            String cover = cursor.getString(imageColumnIndex);
+            final String cover = cursor.getString(imageColumnIndex);
             String supplierName = cursor.getString(supplierNameColumnIndex);
             String supplierEmail = cursor.getString(supplierEmailColumnIndex);
 
@@ -520,13 +630,13 @@ public class EditorActivity extends AppCompatActivity implements
             mQuantityEditText.setText(Integer.toString(quantity));
             mPriceEditText.setText(Integer.toString(price));
 
-            mImageUri = Uri.parse(cover);
-            String dummyImage = "drawable://" + imagePath;
-            mRecordCover.setImageBitmap(image);
-
             mContactNameEditText.setText(supplierName);
             mContactEmailEditText.setText(supplierEmail);
 
+            //mRecordCover.setImageURI(Uri.parse(cover));
+
+            mRecordCover.setImageBitmap(getBitmapFromUri(Uri.parse(cover), mContext, mRecordCover));
+            mImageUri = Uri.parse(cover);
         }
     }
 
