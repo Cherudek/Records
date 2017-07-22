@@ -33,7 +33,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.example.android.records.data.RecordContract.RecordEntry;
@@ -51,7 +50,6 @@ public class CatalogActivity extends AppCompatActivity implements
      * Adapter for the ListView
      */
     RecordCursorAdapter mCursorAdapter;
-    private ImageView dummyView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,13 +112,15 @@ public class CatalogActivity extends AppCompatActivity implements
         // Create a ContentValues object where column names are the keys,
         // and Final Countdown's attributes are the values.
 
+        Uri path = Uri.parse("android.resource://com.example.android.records/" + R.drawable.the_final_countdown_single);
+        String imgPath = path.toString();
 
         ContentValues values = new ContentValues();
         values.put(RecordEntry.COLUMN_ALBUM_NAME, "Final Countdown");
         values.put(RecordEntry.COLUMN_BAND_NAME, "Europe");
         values.put(RecordEntry.COLUMN_QUANTITY, 10);
         values.put(RecordEntry.COLUMN_PRICE, 5);
-        values.put(RecordEntry.COLUMN_RECORD_COVER, "Empty");
+        values.put(RecordEntry.COLUMN_RECORD_COVER, imgPath);
         values.put(RecordEntry.COLUMN_SUPPLIER_NAME, "Virgin");
         values.put(RecordEntry.COLUMN_SUPPLIER_EMAIL, "order@virgin.com");
 
