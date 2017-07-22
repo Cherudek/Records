@@ -245,6 +245,7 @@ public class RecordProvider extends ContentProvider {
         // Check that the album name is not null
         String bandName = values.getAsString(RecordEntry.COLUMN_BAND_NAME);
         if (bandName == null) {
+
             throw new IllegalArgumentException("Record requires a band name");
         }
 
@@ -260,11 +261,11 @@ public class RecordProvider extends ContentProvider {
             throw new IllegalArgumentException("Record requires valid price");
         }
 
-        // Check that the record image is not null
+   /*     // Check that the record image is not null
         String recordCover = values.getAsString(RecordEntry.COLUMN_RECORD_COVER);
         if (recordCover == null) {
             throw new IllegalArgumentException("Record requires an image");
-        }
+        }*/
 
         // Check that the record contact supplier  is not null
         String supplierName = values.getAsString(RecordEntry.COLUMN_SUPPLIER_NAME);

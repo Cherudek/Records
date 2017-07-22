@@ -32,6 +32,7 @@ import android.os.Environment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,6 +46,7 @@ import android.widget.Toast;
 
 import com.example.android.records.data.RecordContract.RecordEntry;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -137,6 +139,20 @@ public class EditorActivity extends AppCompatActivity implements
         }
     };
 
+    public static String BitmapToString(Bitmap image) {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            image.compress(Bitmap.CompressFormat.PNG, 100, baos);
+            byte[] b = baos.toByteArray();
+            String temp = Base64.encodeToString(b, Base64.DEFAULT);
+            return temp;
+        } catch (NullPointerException e) {
+            return null;
+        } catch (OutOfMemoryError e) {
+            return null;
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -187,6 +203,8 @@ public class EditorActivity extends AppCompatActivity implements
         mRecordCover.setOnTouchListener(mTouchListener);
         mContactNameEditText.setOnTouchListener(mTouchListener);
         mContactEmailEditText.setOnTouchListener(mTouchListener);
+        mAddImage.setOnTouchListener(mTouchListener);
+        mOrder.setOnTouchListener(mTouchListener);
 
 
         //Open camera when you press on Add image button
@@ -270,6 +288,7 @@ public class EditorActivity extends AppCompatActivity implements
                 public void onGlobalLayout() {
                     mRecordCover.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     mRecordCover.setImageBitmap(getBitmapFromUri(mImageUri, mContext, mRecordCover));
+
                 }
             });
 
@@ -325,7 +344,6 @@ public class EditorActivity extends AppCompatActivity implements
                 }
             }
         }
-
 
     /**
      * Method to add clear top flag so it doesn't create new instance of parent
@@ -404,18 +422,19 @@ public class EditorActivity extends AppCompatActivity implements
         String supplierNameString = mContactNameEditText.getText().toString().trim();
         String supplierEmailString = mContactEmailEditText.getText().toString().trim();
 
-        String albumCoverString = imagePath.toString();
-        Log.i(LOG_TAG, "TEST: Album Cover string is: " + albumCoverString);
+        // Get the imagePath
+        imagePath = mImageUri.toString();
 
+        Log.i(LOG_TAG, "TEST: Album Cover string is: " + imagePath);
 
         // Check if this is supposed to be a new record
         // and check if all the fields in the editor are blank
         if (mCurrentRecordUri == null &&
                 TextUtils.isEmpty(albumNameString) && TextUtils.isEmpty(bandNameString) &&
                 TextUtils.isEmpty(quantityString) && TextUtils.isEmpty(priceString) &&
-                TextUtils.isEmpty(albumCoverString) && TextUtils.isEmpty(supplierNameString) &&
+                TextUtils.isEmpty(supplierNameString) &&
                 TextUtils.isEmpty(supplierEmailString)) {
-            // Since no fields were modified, we can return early without creating a new pet.
+            // Since no fields were modified, we can return early without creating a new record.
             // No need to create ContentValues and no need to do any ContentProvider operations.
             return;
         }
@@ -439,7 +458,7 @@ public class EditorActivity extends AppCompatActivity implements
             price = Integer.parseInt(priceString);
         }
         values.put(RecordEntry.COLUMN_PRICE, price);
-        values.put(RecordEntry.COLUMN_RECORD_COVER, albumCoverString);
+        values.put(RecordEntry.COLUMN_RECORD_COVER, imagePath);
         values.put(RecordEntry.COLUMN_SUPPLIER_NAME, supplierNameString);
         values.put(RecordEntry.COLUMN_SUPPLIER_EMAIL, supplierEmailString );
 
@@ -633,8 +652,6 @@ public class EditorActivity extends AppCompatActivity implements
             mContactNameEditText.setText(supplierName);
             mContactEmailEditText.setText(supplierEmail);
 
-            //mRecordCover.setImageURI(Uri.parse(cover));
-
             mRecordCover.setImageBitmap(getBitmapFromUri(Uri.parse(cover), mContext, mRecordCover));
             mImageUri = Uri.parse(cover);
         }
@@ -647,7 +664,6 @@ public class EditorActivity extends AppCompatActivity implements
         mBandNameEditText.setText("");
         mQuantityEditText.setText("");
         mPriceEditText.setText("");
-        mRecordCover.setImageResource(R.mipmap.add_record_cover);
         mContactNameEditText.setText("");
         mContactEmailEditText.setText("");}
 
