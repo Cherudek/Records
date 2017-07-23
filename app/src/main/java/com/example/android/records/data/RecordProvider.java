@@ -234,7 +234,7 @@ public class RecordProvider extends ContentProvider {
      * specified in the selection and selection arguments (which could be 0 or 1 or more records).
      * Return the number of rows that were successfully updated.
      */
-    private int updateRecord(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    private int updateRecord(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
 
      /*   if (values.size() == 0) {
             return 0;
@@ -264,51 +264,51 @@ public class RecordProvider extends ContentProvider {
                 values.put(RecordEntry.COLUMN_SUPPLIER_EMAIL, "supplier_email");
             }*/
 
-
+/*
         // Check that the album name is not null
-        String albumName = values.getAsString(RecordContract.RecordEntry.COLUMN_ALBUM_NAME);
+        String albumName = contentValues.getAsString(RecordEntry.COLUMN_ALBUM_NAME);
         if (albumName == null) {
             throw new IllegalArgumentException("Record requires an album name");
         }
         // Check that the album name is not null
-        String bandName = values.getAsString(RecordEntry.COLUMN_BAND_NAME);
+        String bandName = contentValues.getAsString(RecordEntry.COLUMN_BAND_NAME);
         if (bandName == null) {
             throw new IllegalArgumentException("Record requires a band name");
         }
         // Check that the quantity is not null
-        Integer quantity = values.getAsInteger(RecordEntry.COLUMN_QUANTITY);
+        Integer quantity = contentValues.getAsInteger(RecordEntry.COLUMN_QUANTITY);
         if (quantity == null && quantity < 0) {
             throw new IllegalArgumentException("Record requires a quantity");
         }
         // If the price is provided, check that it's greater than or equal to 0 £
-        Integer price = values.getAsInteger(RecordContract.RecordEntry.COLUMN_PRICE);
+        Integer price = contentValues.getAsInteger(RecordEntry.COLUMN_PRICE);
         if (price != null && price < 0) {
             throw new IllegalArgumentException("Record requires valid price");
         }
         //Check that the record image is not null
-        String recordCover = values.getAsString(RecordEntry.COLUMN_RECORD_COVER);
+        String recordCover = contentValues.getAsString(RecordEntry.COLUMN_RECORD_COVER);
         if (recordCover == null) {
             throw new IllegalArgumentException("Record requires an image");
         }
         // Check that the record contact supplier  is not null
-        String supplierName = values.getAsString(RecordEntry.COLUMN_SUPPLIER_NAME);
+        String supplierName = contentValues.getAsString(RecordEntry.COLUMN_SUPPLIER_NAME);
         if (supplierName == null) {
             throw new IllegalArgumentException("Record requires a supplier contact");
         }
         // Check that the record contact supplier  is not null
-        String supplierEmail = values.getAsString(RecordEntry.COLUMN_SUPPLIER_EMAIL);
+        String supplierEmail = contentValues.getAsString(RecordEntry.COLUMN_SUPPLIER_EMAIL);
         if (supplierEmail == null) {
             throw new IllegalArgumentException("Record requires a supplier email");
         }
         // If there are no values to update, then don't try to update the database
-        if (values.size() == 0) {
+        if (contentValues.size() == 0) {
             return 0;
-        }
+        }*/
         // Otherwise, get writable database to update the data
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         // Perform the update on the database and get the number of rows affected
-        int rowsUpdated = database.update(RecordContract.RecordEntry.TABLE_NAME, values, selection, selectionArgs);
+        int rowsUpdated = database.update(RecordContract.RecordEntry.TABLE_NAME, contentValues, selection, selectionArgs);
         // If 1 or more rows were updated, then notify all listeners that the data at the
         // given URI has changed
         if (rowsUpdated != 0) {

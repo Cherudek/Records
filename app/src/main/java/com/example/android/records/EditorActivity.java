@@ -17,6 +17,7 @@ package com.example.android.records;
 
 import android.app.AlertDialog;
 import android.app.LoaderManager;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.CursorLoader;
@@ -49,6 +50,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Allows user to create a new record or edit an existing one.
@@ -109,10 +112,14 @@ public class EditorActivity extends AppCompatActivity implements
 
     /** Button to add an image to the edit record activity */
     private Button mAddImage;
+
     /**
      * Button to order more records from the supplier
      */
     private Button mOrder;
+    private Button mAddStock;
+    private Button mMinusStock;
+
 
     /** Boolean flag that keeps track of whether the record has been edited (true) or not (false) */
     private boolean mRecordHasChanged = false;
@@ -166,6 +173,8 @@ public class EditorActivity extends AppCompatActivity implements
         mContactEmailEditText = (EditText) findViewById(R.id.edit_supplier_email);
         mAddImage = (Button) findViewById(R.id.add_image);
         mOrder = (Button) findViewById(R.id.email_button);
+        mAddStock = (Button) findViewById(R.id.plus);
+        mMinusStock = (Button) findViewById(R.id.minus);
 
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us know if there are unsaved changes
@@ -179,6 +188,7 @@ public class EditorActivity extends AppCompatActivity implements
         mContactEmailEditText.setOnTouchListener(mTouchListener);
         mAddImage.setOnTouchListener(mTouchListener);
         mOrder.setOnTouchListener(mTouchListener);
+
 
         //Open camera when you press on Add image button
         mAddImage.setOnClickListener(new View.OnClickListener() {
@@ -577,6 +587,7 @@ public class EditorActivity extends AppCompatActivity implements
         // (This should be the only row in the cursor)
         if (cursor.moveToFirst()) {
             // Find the columns of record attributes that we're interested in
+            int idColumnIndex = cursor.getColumnIndex(RecordEntry._ID);
             int albumNameColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_ALBUM_NAME);
             int bandNameColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_BAND_NAME);
             int quantityColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_QUANTITY);
@@ -587,9 +598,10 @@ public class EditorActivity extends AppCompatActivity implements
 
 
             // Extract out the value from the Cursor for the given column index
+            final long recordId = cursor.getLong(idColumnIndex);
             String albumName = cursor.getString(albumNameColumnIndex);
             String bandName = cursor.getString(bandNameColumnIndex);
-            int quantity = cursor.getInt(quantityColumnIndex);
+            final int quantity = cursor.getInt(quantityColumnIndex);
             int price = cursor.getInt(priceColumnIndex);
             final String cover = cursor.getString(imageColumnIndex);
             String supplierName = cursor.getString(supplierNameColumnIndex);
@@ -605,7 +617,45 @@ public class EditorActivity extends AppCompatActivity implements
             mContactEmailEditText.setText(supplierEmail);
             mRecordCover.setImageBitmap(getBitmapFromUri(Uri.parse(cover), mContext, mRecordCover));
             mImageUri = Uri.parse(cover);
+
+
+            mAddStock.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (quantity >= 0) {
+                        int newQuantity = quantity + 1;
+                        ContentValues values = new ContentValues();
+                        values.put(RecordEntry.COLUMN_QUANTITY, newQuantity);
+                        Uri recordUri = ContentUris.withAppendedId(RecordEntry.CONTENT_URI, recordId);
+                        int numRowsUpdated = EditorActivity.this.getContentResolver().update(recordUri, values, null, null);
+                        if (!(numRowsUpdated > 0)) {
+                            Log.e(TAG, EditorActivity.this.getString(R.string.editor_update_record_failed));
+                        }
+                    }
+                    int newQuantity = 0;
+
+                }
+            });
+
+            mMinusStock.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (quantity >= 1) {
+                        int newQuantity = quantity - 1;
+                        ContentValues values = new ContentValues();
+                        values.put(RecordEntry.COLUMN_QUANTITY, newQuantity);
+                        Uri recordUri = ContentUris.withAppendedId(RecordEntry.CONTENT_URI, recordId);
+                        int numRowsUpdated = EditorActivity.this.getContentResolver().update(recordUri, values, null, null);
+                        if (!(numRowsUpdated > 0)) {
+                            Log.e(TAG, EditorActivity.this.getString(R.string.editor_update_record_failed));
+                        }
+                    } else if (!(quantity >= 1)) {
+                        Toast.makeText(EditorActivity.this, getString(R.string.negative_stock), Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
+
     }
 
     @Override

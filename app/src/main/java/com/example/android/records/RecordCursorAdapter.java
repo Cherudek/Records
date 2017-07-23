@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.android.records.data.RecordContract.RecordEntry;
 
@@ -43,13 +44,8 @@ public class RecordCursorAdapter extends CursorAdapter {
 
     private static Context mContext;
 
-    ImageView saleImageView;
+    private ImageView saleImageView;
 
-    Integer newQuantity;
-
-    Integer quantity;
-
-    Integer recordId;
 
     /**
      * Constructs a new {@link RecordCursorAdapter}.
@@ -95,6 +91,7 @@ public class RecordCursorAdapter extends CursorAdapter {
         TextView priceTextView = (TextView) view.findViewById(R.id.price);
         saleImageView = (ImageView) view.findViewById(R.id.sale_button);
 
+
         // Find the columns of the record attributes that we're interested in
         int albumNameColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_ALBUM_NAME);
         int bandNameColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_BAND_NAME);
@@ -108,6 +105,7 @@ public class RecordCursorAdapter extends CursorAdapter {
         final int quantity = cursor.getInt(quantityColumnIndex);
         final int price = cursor.getInt(priceNameColumnIndex);
         final long recordId = cursor.getLong(idColumnIndex);
+        final int newQuantity;
 
         // Update the TextViews with the attributes for the current record
         albumNameTextView.setText(albumName);
@@ -126,25 +124,49 @@ public class RecordCursorAdapter extends CursorAdapter {
                     int newQuantity = quantity - 1;
                     Log.i(LOG_TAG, "TEST: On sale click Updated Quantity is: " + newQuantity);
                     // Update table with new stock of the product
-                    ContentValues values = new ContentValues();
-                    values.put(RecordEntry.COLUMN_QUANTITY, newQuantity);
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put(RecordEntry.COLUMN_QUANTITY, newQuantity);
                     Uri recordUri = ContentUris.withAppendedId(RecordEntry.CONTENT_URI, recordId);
-                    Log.i(LOG_TAG, "TEST: On sale click RecordEntry is: " + RecordEntry.CONTENT_URI);
-                    Log.i(LOG_TAG, "TEST: On sale click RecordId is: " + recordUri);
+                    Log.i(LOG_TAG, "TEST: On sale click ContentUri is: " + RecordEntry.CONTENT_URI);
+                    Log.i(LOG_TAG, "TEST: On sale click ContentUri_ID is: " + recordUri);
 
-                    int numRowsUpdated = context.getContentResolver().update(recordUri, values, null, null);
+                    int numRowsUpdated = context.getContentResolver().update(recordUri, contentValues, null, null);
                     Log.i(LOG_TAG, "TEST: number Rows Updated: " + numRowsUpdated);
 
                     if (!(numRowsUpdated > 0)) {
                         Log.e(TAG, context.getString(R.string.editor_update_record_failed));
                     }
-                } else {
-                    newQuantity = 0;
+                } else if (!(quantity >= 1)) {
+                    int quantity = 0;
+                    Toast.makeText(context, R.string.sold_out, Toast.LENGTH_SHORT).show();
+
                 }
+
             }
         });
     }
 
+/*    *//**
+     * This method reduced product stock by 1
+     * @param context - Activity context
+     * @param productUri - Uri used to update the stock of a specific product in the ListView
+     * @param quantity - current stock of that specific product
+     *//*
+    private void newQuantity(Context context, Uri productUri, int quantity) {
+
+        // Reduce stock, check if new stock is less than 0, in which case set it to 0
+        int newQuantity = (quantity >= 1) ? quantity - 1 : 0;
+
+        // Update table with new stock of the product
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(RecordEntry.COLUMN_QUANTITY, newQuantity);
+        int numRowsUpdated = context.getContentResolver().update(productUri, contentValues, null, null);
+
+        // Display error message in Log if product stock fails to update
+        if (!(numRowsUpdated > 0)) {
+            Log.e(TAG, context.getString(R.string.editor_update_record_failed));
+        }
+    }*/
 }
 
 
