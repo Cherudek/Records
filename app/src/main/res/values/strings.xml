@@ -14,41 +14,41 @@
     <!-- Name for the application [CHAR LIMIT=12] -->
     <string name="app_name">Records</string>
 
-    <!-- Label for overflow menu option that inserts fake pet data into the app [CHAR LIMIT=20] -->
+    <!-- Label for overflow menu option that inserts fake record data into the app [CHAR LIMIT=20] -->
     <string name="action_insert_dummy_data">Insert Dummy Data</string>
 
-    <!-- Label for overflow menu option that deletes all pet data in the app [CHAR LIMIT=20] -->
+    <!-- Label for overflow menu option that deletes all record data in the app [CHAR LIMIT=20] -->
     <string name="action_delete_all_entries">Delete All Records</string>
 
     <!-- Title text for the empty view, which describes the empty dog house image [CHAR LIMIT=50] -->
     <string name="empty_view_title_text">We need some music in here...</string>
 
-    <!-- Subtitle text for the empty view that prompts the user to add a pet [CHAR LIMIT=50] -->
+    <!-- Subtitle text for the empty view that prompts the user to add a record [CHAR LIMIT=50] -->
     <string name="empty_view_subtitle_text">Get started by adding a Record</string>
 
-    <!-- Title for the activity to add a new pet [CHAR LIMIT=20] -->
-    <string name="editor_activity_title_new_pet">Add a Record</string>
+    <!-- Title for the activity to add a new record [CHAR LIMIT=20] -->
+    <string name="editor_activity_title_new_record">Add a Record</string>
 
-    <!-- Title for the activity to edit an existing pet [CHAR LIMIT=20] -->
+    <!-- Title for the activity to edit an existing record [CHAR LIMIT=20] -->
     <string name="editor_activity_title_edit_record">Edit Record</string>
 
-    <!-- Label for editor menu option to save pet and leave editor [CHAR LIMIT=20] -->
+    <!-- Label for editor menu option to save record and leave editor [CHAR LIMIT=20] -->
     <string name="action_save">Save</string>
 
-    <!-- Label for editor overflow menu option that deletes the current pet [CHAR LIMIT=20] -->
+    <!-- Label for editor overflow menu option that deletes the current record [CHAR LIMIT=20] -->
     <string name="action_delete">Delete</string>
 
-    <!-- Toast message in editor when new pet has been successfully inserted [CHAR LIMIT=NONE] -->
-    <string name="editor_insert_pet_successful">Record saved</string>
+    <!-- Toast message in editor when new record has been successfully inserted [CHAR LIMIT=NONE] -->
+    <string name="editor_insert_record_successful">Record saved</string>
 
-    <!-- Toast message in editor when new pet has failed to be inserted [CHAR LIMIT=NONE] -->
-    <string name="editor_insert_pet_failed">Error with saving record</string>
+    <!-- Toast message in editor when new record has failed to be inserted [CHAR LIMIT=NONE] -->
+    <string name="editor_insert_record_failed">Error with saving record</string>
 
-    <!-- Toast message in editor when current pet was successfully updated [CHAR LIMIT=NONE] -->
-    <string name="editor_update_pet_successful">Record updated</string>
+    <!-- Toast message in editor when current record was successfully updated [CHAR LIMIT=NONE] -->
+    <string name="editor_update_record_successful">Record updated</string>
 
-    <!-- Toast message in editor when current pet has failed to be updated [CHAR LIMIT=NONE] -->
-    <string name="editor_update_pet_failed">Error with updating record</string>
+    <!-- Toast message in editor when current record has failed to be updated [CHAR LIMIT=NONE] -->
+    <string name="editor_update_record_failed">Error with updating record</string>
 
     <!-- Dialog message when user is leaving editor but hasn't saved changes [CHAR LIMIT=NONE] -->
     <string name="unsaved_changes_dialog_msg">Discard your changes and quit editing?</string>
@@ -56,22 +56,22 @@
     <!-- Dialog button text for the option to discard a user's changes [CHAR LIMIT=20] -->
     <string name="discard">Discard</string>
 
-    <!-- Dialog button text for the option to keep editing the current pet [CHAR LIMIT=20] -->
+    <!-- Dialog button text for the option to keep editing the current record [CHAR LIMIT=20] -->
     <string name="keep_editing">Keep Editing</string>
 
-    <!-- Toast message in editor when current pet was successfully deleted [CHAR LIMIT=NONE] -->
-    <string name="editor_delete_pet_successful">Record deleted</string>
+    <!-- Toast message in editor when current record was successfully deleted [CHAR LIMIT=NONE] -->
+    <string name="editor_delete_record_successful">Record deleted</string>
 
-    <!-- Toast message in editor when current pet has failed to be deleted [CHAR LIMIT=NONE] -->
-    <string name="editor_delete_pet_failed">Error with deleting record</string>
+    <!-- Toast message in editor when current record has failed to be deleted [CHAR LIMIT=NONE] -->
+    <string name="editor_delete_record_failed">Error with deleting record</string>
 
-    <!-- Dialog message to ask the user to confirm deleting the current pet [CHAR LIMIT=NONE] -->
+    <!-- Dialog message to ask the user to confirm deleting the current record [CHAR LIMIT=NONE] -->
     <string name="delete_dialog_msg">Delete this record?</string>
 
-    <!-- Dialog button text for the option to confirm deleting the current pet [CHAR LIMIT=20] -->
+    <!-- Dialog button text for the option to confirm deleting the current record [CHAR LIMIT=20] -->
     <string name="delete">Delete</string>
 
-    <!-- Dialog button text for the option to cancel deletion of the current pet [CHAR LIMIT=20] -->
+    <!-- Dialog button text for the option to cancel deletion of the current record [CHAR LIMIT=20] -->
     <string name="cancel">Cancel</string>
 
     <!-- Label for album name category of attributes in the editor [CHAR LIMIT=30] -->
@@ -104,27 +104,19 @@
     <!-- Text hint for name field in the editor [CHAR LIMIT=30] -->
     <string name="hint_price">Price</string>
 
-    <!-- Units for weight of the pet (kilograms) [CHAR LIMIT=5] -->
+    <!-- Units for quantity of the record [CHAR LIMIT=5] -->
     <string name="hint_Quantity">Quantity</string>
 
-    <!-- Units for Supplier Name of the pet (kilograms) [CHAR LIMIT=5] -->
+    <!-- Units for Supplier Name of the record [CHAR LIMIT=5] -->
     <string name="hint_Supplier_name">Supplier Name</string>
 
-    <!-- Units for Supplier email of the pet (kilograms) [CHAR LIMIT=5] -->
+    <!-- Units for Supplier email of the record [CHAR LIMIT=5] -->
     <string name="hint_Supplier_email">Supplier email</string>
 
-    <!-- Label for dropdown menu option if the pet's gender is unknown [CHAR LIMIT=20] -->
-    <string name="gender_unknown">Unknown</string>
-
-    <!-- Label for dropdown menu option if the pet is male [CHAR LIMIT=20] -->
-    <string name="gender_male">Male</string>
-
-    <!-- Label for dropdown menu option if the pet is female [CHAR LIMIT=20] -->
-    <string name="gender_female">Female</string>
-
-    <!-- Label for the pet's breed if the breed is unknown [CHAR LIMIT=20] -->
+    <!-- Label for the record unknown [CHAR LIMIT=20] -->
     <string name="unknown">Unknown</string>
 
     <string name="minus">-</string>
+
     <string name="plus">+</string>
 </resources>

@@ -32,7 +32,6 @@ import android.os.Environment;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -46,7 +45,6 @@ import android.widget.Toast;
 
 import com.example.android.records.data.RecordContract.RecordEntry;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -59,13 +57,10 @@ public class EditorActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String LOG_TAG = EditorActivity.class.getSimpleName();
-
-
     /**
      * Identifier for the record album image data loader
      */
     public static final int IMAGE_GALLERY_REQUEST = 20;
-
     /** Identifier for the record data loader */
     private static final int EXISTING_RECORD_LOADER = 0;
     /**
@@ -73,14 +68,11 @@ public class EditorActivity extends AppCompatActivity implements
      */
     private static final String STATE_IMAGE_URI = "STATE_IMAGE_URI";
 
-
     final Context mContext = this;
-
     /**
      * Content URI for the existing record cover image(null if it's a new record)
      */
     private Uri mImageUri;
-
     /**
      * Image Path of the record fetched from the Uri
      */
@@ -117,16 +109,13 @@ public class EditorActivity extends AppCompatActivity implements
 
     /** Button to add an image to the edit record activity */
     private Button mAddImage;
-
     /**
      * Button to order more records from the supplier
      */
     private Button mOrder;
 
-
     /** Boolean flag that keeps track of whether the record has been edited (true) or not (false) */
     private boolean mRecordHasChanged = false;
-
     /**
      * OnTouchListener that listens for any user touches on a View, implying that they are modifying
      * the view, and we change the mRecordHasChanged boolean to true.
@@ -138,20 +127,6 @@ public class EditorActivity extends AppCompatActivity implements
             return false;
         }
     };
-
-    public static String BitmapToString(Bitmap image) {
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            image.compress(Bitmap.CompressFormat.PNG, 100, baos);
-            byte[] b = baos.toByteArray();
-            String temp = Base64.encodeToString(b, Base64.DEFAULT);
-            return temp;
-        } catch (NullPointerException e) {
-            return null;
-        } catch (OutOfMemoryError e) {
-            return null;
-        }
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -167,7 +142,7 @@ public class EditorActivity extends AppCompatActivity implements
         // creating a new record.
         if (mCurrentRecordUri == null) {
             // This is a new record, so change the app bar to say "Add a Record"
-            setTitle(getString(R.string.editor_activity_title_new_pet));
+            setTitle(getString(R.string.editor_activity_title_new_record));
 
             // Invalidate the options menu, so the "Delete" menu option can be hidden.
             // (It doesn't make sense to delete a record that hasn't been created yet.)
@@ -192,7 +167,6 @@ public class EditorActivity extends AppCompatActivity implements
         mAddImage = (Button) findViewById(R.id.add_image);
         mOrder = (Button) findViewById(R.id.email_button);
 
-
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us know if there are unsaved changes
         // or not, if the user tries to leave the editor without saving.
@@ -205,7 +179,6 @@ public class EditorActivity extends AppCompatActivity implements
         mContactEmailEditText.setOnTouchListener(mTouchListener);
         mAddImage.setOnTouchListener(mTouchListener);
         mOrder.setOnTouchListener(mTouchListener);
-
 
         //Open camera when you press on Add image button
         mAddImage.setOnClickListener(new View.OnClickListener() {
@@ -232,7 +205,7 @@ public class EditorActivity extends AppCompatActivity implements
 
         });
 
-        //Open camera when you press on Add image button
+        //Open the email app to send a message with pre populated fields
         mOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -245,9 +218,7 @@ public class EditorActivity extends AppCompatActivity implements
                 String subject = "Order: " + albumName + " by " + bandName;
                 String supplier = mContactNameEditText.getText().toString();
                 String sep = System.getProperty("line.separator");
-
                 String message = "Dear " + supplier + "," + sep + "I would like to order 10 more copies of " + albumName + " by " + bandName + " . " + sep + "Regards," + sep + "Gregorio";
-
                 emailIntent.setData(Uri.parse("mailto:" + to));
                 //email.putExtra(Intent.EXTRA_CC, new String[]{ to});
                 //email.putExtra(Intent.EXTRA_BCC, new String[]{to});
@@ -288,57 +259,39 @@ public class EditorActivity extends AppCompatActivity implements
                 public void onGlobalLayout() {
                     mRecordCover.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     mRecordCover.setImageBitmap(getBitmapFromUri(mImageUri, mContext, mRecordCover));
-
                 }
             });
-
-
         }
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-
-            //if we are here our request was successful
+        //if we are here our request was successful
         if (requestCode == IMAGE_GALLERY_REQUEST && (resultCode == RESULT_OK)) {
-
             try {
-
                 //this is the address of the image on the sd cards
                 mImageUri = data.getData();
-
                 int takeFlags = data.getFlags();
                 takeFlags &= (Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                 imagePath = mImageUri.toString();
-
                 //Declare a stream to read the data from the card
                 InputStream inputStream;
-
-                    //We are getting an input stream based on the Uri of the image
-                    inputStream = getContentResolver().openInputStream(mImageUri);
-
-                    //Get a bitmap from the stream
-                    image = BitmapFactory.decodeStream(inputStream);
-
-                    //Show the image to the user
-                    mRecordCover.setImageBitmap(image);
-
+                //We are getting an input stream based on the Uri of the image
+                inputStream = getContentResolver().openInputStream(mImageUri);
+                //Get a bitmap from the stream
+                image = BitmapFactory.decodeStream(inputStream);
+                //Show the image to the user
+                mRecordCover.setImageBitmap(image);
                 imagePath = mImageUri.toString();
-
                 try {
                     getContentResolver().takePersistableUriPermission(mImageUri, takeFlags);
-
-
                 } catch (SecurityException e) {
                     e.printStackTrace();
                 }
                 mRecordCover.setImageBitmap(getBitmapFromUri(mImageUri, mContext, mRecordCover));
 
-
-
                 } catch (Exception e) {
                     e.printStackTrace();
-
                     //Show the user a Toast mewssage that the Image is not available
                     Toast.makeText(EditorActivity.this, "Unable to open image", Toast.LENGTH_LONG).show();
                 }
@@ -463,24 +416,24 @@ public class EditorActivity extends AppCompatActivity implements
         values.put(RecordEntry.COLUMN_SUPPLIER_EMAIL, supplierEmailString );
 
 
-        // Determine if this is a new or existing pet by checking if mCurrentRecordUri is null or not
+        // Determine if this is a new or existing record by checking if mCurrentRecordUri is null or not
         if (mCurrentRecordUri == null) {
-            // This is a NEW pet, so insert a new record into the provider,
-            // returning the content URI for the new pet.
+            // This is a NEW record, so insert a new record into the provider,
+            // returning the content URI for the new record.
             Uri newUri = getContentResolver().insert(RecordEntry.CONTENT_URI, values);
 
             // Show a toast message depending on whether or not the insertion was successful.
             if (newUri == null) {
                 // If the new content URI is null, then there was an error with insertion.
-                Toast.makeText(this, getString(R.string.editor_insert_pet_failed),
+                Toast.makeText(this, getString(R.string.editor_insert_record_failed),
                         Toast.LENGTH_SHORT).show();
             } else {
                 // Otherwise, the insertion was successful and we can display a toast.
-                Toast.makeText(this, getString(R.string.editor_insert_pet_successful),
+                Toast.makeText(this, getString(R.string.editor_insert_record_successful),
                         Toast.LENGTH_SHORT).show();
             }
         } else {
-            // Otherwise this is an EXISTING pet, so update the pet with content URI: mCurrentRecordUri
+            // Otherwise this is an EXISTING record, so update the record with content URI: mCurrentRecordUri
             // and pass in the new ContentValues. Pass in null for the selection and selection args
             // because mCurrentRecordUri will already identify the correct row in the database that
             // we want to modify.
@@ -489,11 +442,11 @@ public class EditorActivity extends AppCompatActivity implements
             // Show a toast message depending on whether or not the update was successful.
             if (rowsAffected == 0) {
                 // If no rows were affected, then there was an error with the update.
-                Toast.makeText(this, getString(R.string.editor_update_pet_failed),
+                Toast.makeText(this, getString(R.string.editor_update_record_failed),
                         Toast.LENGTH_SHORT).show();
             } else {
                 // Otherwise, the update was successful and we can display a toast.
-                Toast.makeText(this, getString(R.string.editor_update_pet_successful),
+                Toast.makeText(this, getString(R.string.editor_update_record_successful),
                         Toast.LENGTH_SHORT).show();
             }
         }
@@ -514,7 +467,7 @@ public class EditorActivity extends AppCompatActivity implements
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        // If this is a new pet, hide the "Delete" menu item.
+        // If this is a new record, hide the "Delete" menu item.
         if (mCurrentRecordUri == null) {
             MenuItem menuItem = menu.findItem(R.id.action_delete);
             menuItem.setVisible(false);
@@ -528,7 +481,7 @@ public class EditorActivity extends AppCompatActivity implements
         switch (item.getItemId()) {
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
-                // Save pet to database
+                // Save record to database
                 saveRecord();
                 // Exit activity
                 finish();
@@ -540,7 +493,7 @@ public class EditorActivity extends AppCompatActivity implements
                 return true;
             // Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
-                // If the pet hasn't changed, continue with navigating up to parent activity
+                // If the record hasn't changed, continue with navigating up to parent activity
                 // which is the {@link CatalogActivity}.
                 if (!mRecordHasChanged) {
                     NavUtils.navigateUpFromSameTask(EditorActivity.this);
@@ -593,7 +546,7 @@ public class EditorActivity extends AppCompatActivity implements
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         // Since the editor shows all record attributes, define a projection that contains
-        // all columns from the pet table
+        // all columns from the record table
         String[] projection = {
                 RecordEntry._ID,
                 RecordEntry.COLUMN_ALBUM_NAME,
@@ -623,7 +576,7 @@ public class EditorActivity extends AppCompatActivity implements
         // Proceed with moving to the first row of the cursor and reading data from it
         // (This should be the only row in the cursor)
         if (cursor.moveToFirst()) {
-            // Find the columns of pet attributes that we're interested in
+            // Find the columns of record attributes that we're interested in
             int albumNameColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_ALBUM_NAME);
             int bandNameColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_BAND_NAME);
             int quantityColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_QUANTITY);
@@ -648,10 +601,8 @@ public class EditorActivity extends AppCompatActivity implements
             mBandNameEditText.setText(bandName);
             mQuantityEditText.setText(Integer.toString(quantity));
             mPriceEditText.setText(Integer.toString(price));
-
             mContactNameEditText.setText(supplierName);
             mContactEmailEditText.setText(supplierEmail);
-
             mRecordCover.setImageBitmap(getBitmapFromUri(Uri.parse(cover), mContext, mRecordCover));
             mImageUri = Uri.parse(cover);
         }
@@ -684,7 +635,7 @@ public class EditorActivity extends AppCompatActivity implements
         builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Keep editing" button, so dismiss the dialog
-                // and continue editing the pet.
+                // and continue editing the record.
                 if (dialog != null) {
                     dialog.dismiss();
                 }
@@ -697,7 +648,7 @@ public class EditorActivity extends AppCompatActivity implements
     }
 
     /**
-     * Prompt the user to confirm that they want to delete this pet.
+     * Prompt the user to confirm that they want to delete this record.
      */
     private void showDeleteConfirmationDialog() {
         // Create an AlertDialog.Builder and set the message, and click listeners
@@ -706,14 +657,14 @@ public class EditorActivity extends AppCompatActivity implements
         builder.setMessage(R.string.delete_dialog_msg);
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Delete" button, so delete the pet.
+                // User clicked the "Delete" button, so delete the record.
                 deleteRecord();
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Cancel" button, so dismiss the dialog
-                // and continue editing the pet.
+                // and continue editing the record.
                 if (dialog != null) {
                     dialog.dismiss();
                 }
@@ -726,24 +677,24 @@ public class EditorActivity extends AppCompatActivity implements
     }
 
     /**
-     * Perform the deletion of the pet in the database.
+     * Perform the deletion of the record in the database.
      */
     private void deleteRecord() {
-        // Only perform the delete if this is an existing pet.
+        // Only perform the delete if this is an existing record.
         if (mCurrentRecordUri != null) {
-            // Call the ContentResolver to delete the pet at the given content URI.
+            // Call the ContentResolver to delete the record at the given content URI.
             // Pass in null for the selection and selection args because the mCurrentRecordUri
-            // content URI already identifies the pet that we want.
+            // content URI already identifies the record that we want.
             int rowsDeleted = getContentResolver().delete(mCurrentRecordUri, null, null);
 
             // Show a toast message depending on whether or not the delete was successful.
             if (rowsDeleted == 0) {
                 // If no rows were deleted, then there was an error with the delete.
-                Toast.makeText(this, getString(R.string.editor_delete_pet_failed),
+                Toast.makeText(this, getString(R.string.editor_delete_record_failed),
                         Toast.LENGTH_SHORT).show();
             } else {
                 // Otherwise, the delete was successful and we can display a toast.
-                Toast.makeText(this, getString(R.string.editor_delete_pet_successful),
+                Toast.makeText(this, getString(R.string.editor_delete_record_successful),
                         Toast.LENGTH_SHORT).show();
             }
         }

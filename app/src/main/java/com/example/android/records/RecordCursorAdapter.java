@@ -15,16 +15,22 @@
  */
 package com.example.android.records;
 
+import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.android.records.data.RecordContract;
 import com.example.android.records.data.RecordContract.RecordEntry;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * {@link RecordCursorAdapter} is an adapter for a list or grid view
@@ -33,18 +39,29 @@ import com.example.android.records.data.RecordContract.RecordEntry;
  */
 public class RecordCursorAdapter extends CursorAdapter {
 
-    /**
-     * Constructs a new {@link RecordCursorAdapter}.
-     *
-     * @param context The context
-     * @param c       The cursor from which to get the data.
-     */
-    public RecordCursorAdapter(Context context, Cursor c) {
-        super(context, c, 0 /* flags */);
-    }
+    public static final String LOG_TAG = RecordCursorAdapter.class.getSimpleName();
+
+    private static Context mContext;
+
+    ImageView saleImageView;
+
+    Integer newQuantity;
+
+    Integer quantity;
+
+    Integer recordId;
 
     /**
-     * Makes a new blank list item view. No data is set (or bound) to the views yet.
+     * Constructs a new {@link RecordCursorAdapter}.
+     * @param context The context
+     * @param cursor       The cursor from which to get the data.
+     */
+    public RecordCursorAdapter(Context context, Cursor cursor) {
+        super(context, cursor, 0 /* flags */);
+        mContext = context;
+    }
+    /**
+     *  newView makes a new blank list item view. No data is set (or bound) to the views yet.
      *
      * @param context app context
      * @param cursor  The cursor from which to get the data. The cursor is already
@@ -57,9 +74,8 @@ public class RecordCursorAdapter extends CursorAdapter {
         // Inflate a list item view using the layout specified in list_item.xml
         return LayoutInflater.from(context).inflate(R.layout.list_item, parent, false);
     }
-
     /**
-     * This method binds the record data (in the current row pointed to by cursor) to the given
+     * The bindView method binds the record data (in the current row pointed to by cursor) to the given
      * list item layout. For example, the name for the current record can be set on the name TextView
      * in the list item layout.
      *
@@ -69,30 +85,66 @@ public class RecordCursorAdapter extends CursorAdapter {
      *                correct row.
      */
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, final Context context, Cursor cursor) {
+
+
         // Find individual views that we want to modify in the list item layout
         TextView albumNameTextView = (TextView) view.findViewById(R.id.album_name);
         TextView bandNameTextView = (TextView) view.findViewById(R.id.band_name);
         TextView quantityTextView = (TextView) view.findViewById(R.id.quantiy);
         TextView priceTextView = (TextView) view.findViewById(R.id.price);
+        saleImageView = (ImageView) view.findViewById(R.id.sale_button);
 
         // Find the columns of the record attributes that we're interested in
         int albumNameColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_ALBUM_NAME);
-        int bandNameColumnIndex = cursor.getColumnIndex(RecordContract.RecordEntry.COLUMN_BAND_NAME);
+        int bandNameColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_BAND_NAME);
         int quantityColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_QUANTITY);
         int priceNameColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_PRICE);
+        int idColumnIndex = cursor.getColumnIndex(RecordEntry._ID);
 
         // Read the record attributes from the Cursor for the current record
-        String albumName = cursor.getString(albumNameColumnIndex);
-        String bandName = cursor.getString(bandNameColumnIndex);
-        String quantity = cursor.getString(quantityColumnIndex);
-        String price = cursor.getString(priceNameColumnIndex);
+        final String albumName = cursor.getString(albumNameColumnIndex);
+        final String bandName = cursor.getString(bandNameColumnIndex);
+        final int quantity = cursor.getInt(quantityColumnIndex);
+        final int price = cursor.getInt(priceNameColumnIndex);
+        final long recordId = cursor.getLong(idColumnIndex);
 
         // Update the TextViews with the attributes for the current record
         albumNameTextView.setText(albumName);
         bandNameTextView.setText(bandName);
-        quantityTextView.setText(quantity);
-        priceTextView.setText(price);
+        quantityTextView.setText(Integer.toString(quantity));
+        priceTextView.setText(Integer.toString(price));
 
+        // Sale button reduces the quantity of the record in stock by -1.
+        saleImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (quantity >= 1) {
+
+                    Log.i(LOG_TAG, "TEST: On sale click Quantity is: " + quantity);
+                    int newQuantity = quantity - 1;
+                    Log.i(LOG_TAG, "TEST: On sale click Updated Quantity is: " + newQuantity);
+                    // Update table with new stock of the product
+                    ContentValues values = new ContentValues();
+                    values.put(RecordEntry.COLUMN_QUANTITY, newQuantity);
+                    Uri recordUri = ContentUris.withAppendedId(RecordEntry.CONTENT_URI, recordId);
+                    Log.i(LOG_TAG, "TEST: On sale click RecordEntry is: " + RecordEntry.CONTENT_URI);
+                    Log.i(LOG_TAG, "TEST: On sale click RecordId is: " + recordUri);
+
+                    int numRowsUpdated = context.getContentResolver().update(recordUri, values, null, null);
+                    Log.i(LOG_TAG, "TEST: number Rows Updated: " + numRowsUpdated);
+
+                    if (!(numRowsUpdated > 0)) {
+                        Log.e(TAG, context.getString(R.string.editor_update_record_failed));
+                    }
+                } else {
+                    newQuantity = 0;
+                }
+            }
+        });
     }
+
 }
+
+

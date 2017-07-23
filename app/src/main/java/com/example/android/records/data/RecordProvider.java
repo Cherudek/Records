@@ -212,8 +212,7 @@ public class RecordProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues contentValues, String selection,
-                      String[] selectionArgs) {
+    public int update(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case RECORDS:
@@ -237,6 +236,35 @@ public class RecordProvider extends ContentProvider {
      */
     private int updateRecord(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
 
+     /*   if (values.size() == 0) {
+            return 0;
+        } else {
+            if (values.containsKey(RecordEntry.COLUMN_QUANTITY)) {
+                values.put(RecordEntry.COLUMN_QUANTITY, "quantity");
+                values.put(RecordEntry.COLUMN_ALBUM_NAME, "album_name");
+                values.put(RecordEntry.COLUMN_BAND_NAME, "band_name");
+                values.put(RecordEntry.COLUMN_PRICE, "price");
+                values.put(RecordEntry.COLUMN_RECORD_COVER, "cover");
+                values.put(RecordEntry.COLUMN_SUPPLIER_NAME, "supplier_name");
+                values.put(RecordEntry.COLUMN_SUPPLIER_EMAIL, "supplier_email");
+            }*/
+
+/*
+            } else if (values.containsKey(RecordEntry.COLUMN_ALBUM_NAME)) {
+                values.put(RecordEntry.COLUMN_ALBUM_NAME, "album_name");
+            } else if (values.containsKey(RecordEntry.COLUMN_BAND_NAME)) {
+                values.put(RecordEntry.COLUMN_BAND_NAME, "band_name");
+            } else if (values.containsKey(RecordEntry.COLUMN_PRICE)) {
+                values.put(RecordEntry.COLUMN_PRICE, "price");
+            } else if (values.containsKey(RecordEntry.COLUMN_RECORD_COVER)) {
+                values.put(RecordEntry.COLUMN_RECORD_COVER, "cover");
+            } else if (values.containsKey(RecordEntry.COLUMN_SUPPLIER_NAME)) {
+                values.put(RecordEntry.COLUMN_SUPPLIER_NAME, "supplier_name");
+            } else if (values.containsKey(RecordEntry.COLUMN_SUPPLIER_EMAIL)) {
+                values.put(RecordEntry.COLUMN_SUPPLIER_EMAIL, "supplier_email");
+            }*/
+
+
         // Check that the album name is not null
         String albumName = values.getAsString(RecordContract.RecordEntry.COLUMN_ALBUM_NAME);
         if (albumName == null) {
@@ -245,61 +273,51 @@ public class RecordProvider extends ContentProvider {
         // Check that the album name is not null
         String bandName = values.getAsString(RecordEntry.COLUMN_BAND_NAME);
         if (bandName == null) {
-
             throw new IllegalArgumentException("Record requires a band name");
         }
-
         // Check that the quantity is not null
         Integer quantity = values.getAsInteger(RecordEntry.COLUMN_QUANTITY);
         if (quantity == null && quantity < 0) {
             throw new IllegalArgumentException("Record requires a quantity");
         }
-
         // If the price is provided, check that it's greater than or equal to 0 £
         Integer price = values.getAsInteger(RecordContract.RecordEntry.COLUMN_PRICE);
         if (price != null && price < 0) {
             throw new IllegalArgumentException("Record requires valid price");
         }
-
-   /*     // Check that the record image is not null
+        //Check that the record image is not null
         String recordCover = values.getAsString(RecordEntry.COLUMN_RECORD_COVER);
         if (recordCover == null) {
             throw new IllegalArgumentException("Record requires an image");
-        }*/
-
+        }
         // Check that the record contact supplier  is not null
         String supplierName = values.getAsString(RecordEntry.COLUMN_SUPPLIER_NAME);
         if (supplierName == null) {
             throw new IllegalArgumentException("Record requires a supplier contact");
         }
-
-
         // Check that the record contact supplier  is not null
         String supplierEmail = values.getAsString(RecordEntry.COLUMN_SUPPLIER_EMAIL);
         if (supplierEmail == null) {
             throw new IllegalArgumentException("Record requires a supplier email");
         }
-
         // If there are no values to update, then don't try to update the database
         if (values.size() == 0) {
             return 0;
         }
-
         // Otherwise, get writable database to update the data
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         // Perform the update on the database and get the number of rows affected
         int rowsUpdated = database.update(RecordContract.RecordEntry.TABLE_NAME, values, selection, selectionArgs);
-
         // If 1 or more rows were updated, then notify all listeners that the data at the
         // given URI has changed
         if (rowsUpdated != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
-
         // Return the number of rows updated
         return rowsUpdated;
     }
+
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
@@ -330,7 +348,6 @@ public class RecordProvider extends ContentProvider {
         if (rowsDeleted != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
-
         // Return the number of rows deleted
         return rowsDeleted;
     }

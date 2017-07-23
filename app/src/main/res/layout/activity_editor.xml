@@ -200,7 +200,7 @@
             android:inputType="textEmailAddress" />
     </LinearLayout>
 
-    <!-- Add Record in inventory -->
+    <!-- Email Supplier Button -->
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

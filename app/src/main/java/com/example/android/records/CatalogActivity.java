@@ -42,6 +42,9 @@ import com.example.android.records.data.RecordContract.RecordEntry;
  */
 public class CatalogActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor> {
+
+    public static final String LOG_TAG = CatalogActivity.class.getSimpleName();
+
     /**
      * Identifier for the record data loader
      */
@@ -50,6 +53,7 @@ public class CatalogActivity extends AppCompatActivity implements
      * Adapter for the ListView
      */
     RecordCursorAdapter mCursorAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,19 +71,19 @@ public class CatalogActivity extends AppCompatActivity implements
         });
 
         // Find the ListView which will be populated with the record data
-        ListView petListView = (ListView) findViewById(R.id.list);
+        ListView recordListView = (ListView) findViewById(R.id.list);
 
         // Find and set empty view on the ListView, so that it only shows when the list has 0 items.
         View emptyView = findViewById(R.id.empty_view);
-        petListView.setEmptyView(emptyView);
+        recordListView.setEmptyView(emptyView);
 
         // Setup an Adapter to create a list item for each row of record data in the Cursor.
         // There is no record data yet (until the loader finishes) so pass in null for the Cursor.
         mCursorAdapter = new RecordCursorAdapter(this, null);
-        petListView.setAdapter(mCursorAdapter);
+        recordListView.setAdapter(mCursorAdapter);
 
         // Setup the item click listener
-        petListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        recordListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 // Create new intent to go to {@link EditorActivity}
@@ -102,6 +106,7 @@ public class CatalogActivity extends AppCompatActivity implements
 
         // Kick off the loader
         getLoaderManager().initLoader(RECORD_LOADER, null, this);
+
     }
 
 
