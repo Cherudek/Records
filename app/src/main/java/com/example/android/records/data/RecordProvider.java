@@ -25,6 +25,7 @@ import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.android.records.R;
 import com.example.android.records.data.RecordContract.RecordEntry;
 
 /**
@@ -236,38 +237,20 @@ public class RecordProvider extends ContentProvider {
      */
     private int updateRecord(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
 
-     /*   if (values.size() == 0) {
-            return 0;
-        } else {
-            if (values.containsKey(RecordEntry.COLUMN_QUANTITY)) {
-                values.put(RecordEntry.COLUMN_QUANTITY, "quantity");
-                values.put(RecordEntry.COLUMN_ALBUM_NAME, "album_name");
-                values.put(RecordEntry.COLUMN_BAND_NAME, "band_name");
-                values.put(RecordEntry.COLUMN_PRICE, "price");
-                values.put(RecordEntry.COLUMN_RECORD_COVER, "cover");
-                values.put(RecordEntry.COLUMN_SUPPLIER_NAME, "supplier_name");
-                values.put(RecordEntry.COLUMN_SUPPLIER_EMAIL, "supplier_email");
-            }*/
 
-/*
-            } else if (values.containsKey(RecordEntry.COLUMN_ALBUM_NAME)) {
-                values.put(RecordEntry.COLUMN_ALBUM_NAME, "album_name");
-            } else if (values.containsKey(RecordEntry.COLUMN_BAND_NAME)) {
-                values.put(RecordEntry.COLUMN_BAND_NAME, "band_name");
-            } else if (values.containsKey(RecordEntry.COLUMN_PRICE)) {
-                values.put(RecordEntry.COLUMN_PRICE, "price");
-            } else if (values.containsKey(RecordEntry.COLUMN_RECORD_COVER)) {
-                values.put(RecordEntry.COLUMN_RECORD_COVER, "cover");
-            } else if (values.containsKey(RecordEntry.COLUMN_SUPPLIER_NAME)) {
-                values.put(RecordEntry.COLUMN_SUPPLIER_NAME, "supplier_name");
-            } else if (values.containsKey(RecordEntry.COLUMN_SUPPLIER_EMAIL)) {
-                values.put(RecordEntry.COLUMN_SUPPLIER_EMAIL, "supplier_email");
-            }*/
+        // Otherwise, get writable database to update the data
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
-/*
+        // Perform the update on the database and get the number of rows affected
+        int rowsUpdated = database.update(RecordEntry.TABLE_NAME, contentValues, selection, selectionArgs);
+
+
+
         // Check that the album name is not null
         String albumName = contentValues.getAsString(RecordEntry.COLUMN_ALBUM_NAME);
+        Log.i(LOG_TAG, "TEST: Album Name is: " + albumName);
         if (albumName == null) {
+            Toast.makeText(getContext(), R.string.field_required, Toast.LENGTH_SHORT).show();
             throw new IllegalArgumentException("Record requires an album name");
         }
         // Check that the album name is not null
@@ -303,12 +286,7 @@ public class RecordProvider extends ContentProvider {
         // If there are no values to update, then don't try to update the database
         if (contentValues.size() == 0) {
             return 0;
-        }*/
-        // Otherwise, get writable database to update the data
-        SQLiteDatabase database = mDbHelper.getWritableDatabase();
-
-        // Perform the update on the database and get the number of rows affected
-        int rowsUpdated = database.update(RecordContract.RecordEntry.TABLE_NAME, contentValues, selection, selectionArgs);
+        }
         // If 1 or more rows were updated, then notify all listeners that the data at the
         // given URI has changed
         if (rowsUpdated != 0) {
@@ -316,6 +294,8 @@ public class RecordProvider extends ContentProvider {
         }
         // Return the number of rows updated
         return rowsUpdated;
+
+
     }
 
 
