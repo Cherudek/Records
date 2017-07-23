@@ -144,6 +144,11 @@ public class RecordProvider extends ContentProvider {
      * for that specific row in the database.
      */
     private Uri insertRecord(Uri uri, ContentValues values) {
+
+        if (values == null) {
+            Toast.makeText(getContext(), "Record cannot be empty", Toast.LENGTH_LONG).show();
+            throw new IllegalArgumentException("Record cannot be empty");
+        }
         // Check that the album name is not null
         String albumName = values.getAsString(RecordEntry.COLUMN_ALBUM_NAME);
         if (albumName == null) {
@@ -237,25 +242,17 @@ public class RecordProvider extends ContentProvider {
      */
     private int updateRecord(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
 
+        //if there are no changes
+        if (contentValues == null) {
 
-        // Otherwise, get writable database to update the data
-        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+            // Check that the album name is not null
 
-        // Perform the update on the database and get the number of rows affected
-        int rowsUpdated = database.update(RecordEntry.TABLE_NAME, contentValues, selection, selectionArgs);
-
-
-
-        // Check that the album name is not null
-        String albumName = contentValues.getAsString(RecordEntry.COLUMN_ALBUM_NAME);
-        Log.i(LOG_TAG, "TEST: Album Name is: " + albumName);
-        if (albumName == null) {
+            if (contentValues.containsKey(RecordEntry.COLUMN_ALBUM_NAME)) {
             Toast.makeText(getContext(), R.string.field_required, Toast.LENGTH_SHORT).show();
             throw new IllegalArgumentException("Record requires an album name");
-        }
-        // Check that the album name is not null
-        String bandName = contentValues.getAsString(RecordEntry.COLUMN_BAND_NAME);
-        if (bandName == null) {
+
+            }  // Check that the album name is not null
+            if (contentValues.containsKey(RecordEntry.COLUMN_BAND_NAME)) {
             throw new IllegalArgumentException("Record requires a band name");
         }
         // Check that the quantity is not null
@@ -269,24 +266,29 @@ public class RecordProvider extends ContentProvider {
             throw new IllegalArgumentException("Record requires valid price");
         }
         //Check that the record image is not null
-        String recordCover = contentValues.getAsString(RecordEntry.COLUMN_RECORD_COVER);
-        if (recordCover == null) {
+            if (contentValues.containsKey(RecordEntry.COLUMN_RECORD_COVER)) {
             throw new IllegalArgumentException("Record requires an image");
         }
         // Check that the record contact supplier  is not null
-        String supplierName = contentValues.getAsString(RecordEntry.COLUMN_SUPPLIER_NAME);
-        if (supplierName == null) {
+            if (contentValues.containsKey(RecordEntry.COLUMN_SUPPLIER_NAME)) {
             throw new IllegalArgumentException("Record requires a supplier contact");
         }
         // Check that the record contact supplier  is not null
-        String supplierEmail = contentValues.getAsString(RecordEntry.COLUMN_SUPPLIER_EMAIL);
-        if (supplierEmail == null) {
+            if (contentValues.containsKey(RecordEntry.COLUMN_SUPPLIER_EMAIL)) {
             throw new IllegalArgumentException("Record requires a supplier email");
         }
         // If there are no values to update, then don't try to update the database
         if (contentValues.size() == 0) {
             return 0;
         }
+        }
+
+
+        // Otherwise, get writable database to update the data
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        // Perform the update on the database and get the number of rows affected
+        int rowsUpdated = database.update(RecordEntry.TABLE_NAME, contentValues, selection, selectionArgs);
         // If 1 or more rows were updated, then notify all listeners that the data at the
         // given URI has changed
         if (rowsUpdated != 0) {

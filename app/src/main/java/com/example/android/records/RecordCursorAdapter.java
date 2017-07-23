@@ -97,6 +97,7 @@ public class RecordCursorAdapter extends CursorAdapter {
         int bandNameColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_BAND_NAME);
         int quantityColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_QUANTITY);
         int priceNameColumnIndex = cursor.getColumnIndex(RecordEntry.COLUMN_PRICE);
+
         int idColumnIndex = cursor.getColumnIndex(RecordEntry._ID);
 
         // Read the record attributes from the Cursor for the current record
@@ -123,12 +124,15 @@ public class RecordCursorAdapter extends CursorAdapter {
                     Log.i(LOG_TAG, "TEST: On sale click Quantity is: " + quantity);
                     int newQuantity = quantity - 1;
                     Log.i(LOG_TAG, "TEST: On sale click Updated Quantity is: " + newQuantity);
+
                     // Update table with new stock of the product
                     ContentValues contentValues = new ContentValues();
                     contentValues.put(RecordEntry.COLUMN_QUANTITY, newQuantity);
                     Uri recordUri = ContentUris.withAppendedId(RecordEntry.CONTENT_URI, recordId);
                     Log.i(LOG_TAG, "TEST: On sale click ContentUri is: " + RecordEntry.CONTENT_URI);
                     Log.i(LOG_TAG, "TEST: On sale click ContentUri_ID is: " + recordUri);
+                    Log.i(LOG_TAG, "TEST: On sale click Album Name is: " + albumName);
+
 
                     int numRowsUpdated = context.getContentResolver().update(recordUri, contentValues, null, null);
                     Log.i(LOG_TAG, "TEST: number Rows Updated: " + numRowsUpdated);
@@ -141,32 +145,9 @@ public class RecordCursorAdapter extends CursorAdapter {
                     Toast.makeText(context, R.string.sold_out, Toast.LENGTH_SHORT).show();
 
                 }
-
             }
         });
     }
-
-/*    *//**
-     * This method reduced product stock by 1
-     * @param context - Activity context
-     * @param productUri - Uri used to update the stock of a specific product in the ListView
-     * @param quantity - current stock of that specific product
-     *//*
-    private void newQuantity(Context context, Uri productUri, int quantity) {
-
-        // Reduce stock, check if new stock is less than 0, in which case set it to 0
-        int newQuantity = (quantity >= 1) ? quantity - 1 : 0;
-
-        // Update table with new stock of the product
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(RecordEntry.COLUMN_QUANTITY, newQuantity);
-        int numRowsUpdated = context.getContentResolver().update(productUri, contentValues, null, null);
-
-        // Display error message in Log if product stock fails to update
-        if (!(numRowsUpdated > 0)) {
-            Log.e(TAG, context.getString(R.string.editor_update_record_failed));
-        }
-    }*/
 }
 
 
