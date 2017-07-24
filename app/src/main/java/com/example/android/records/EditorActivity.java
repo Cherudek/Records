@@ -385,6 +385,11 @@ public class EditorActivity extends AppCompatActivity implements
         String supplierNameString = mContactNameEditText.getText().toString().trim();
         String supplierEmailString = mContactEmailEditText.getText().toString().trim();
 
+        if (mImageUri == null) {
+            Toast.makeText(EditorActivity.this, "You Need an Image Cover", Toast.LENGTH_LONG).show();
+
+        }
+
         // Get the imagePath
         imagePath = mImageUri.toString();
 
@@ -392,13 +397,15 @@ public class EditorActivity extends AppCompatActivity implements
 
         // Check if this is supposed to be a new record
         // and check if all the fields in the editor are blank
-        if (mCurrentRecordUri == null &&
-                TextUtils.isEmpty(albumNameString) && TextUtils.isEmpty(bandNameString) &&
-                TextUtils.isEmpty(quantityString) && TextUtils.isEmpty(priceString) &&
-                TextUtils.isEmpty(supplierNameString) &&
+        if (mCurrentRecordUri == null ||
+                TextUtils.isEmpty(albumNameString) || TextUtils.isEmpty(bandNameString) ||
+                TextUtils.isEmpty(quantityString) || TextUtils.isEmpty(priceString) ||
+                TextUtils.isEmpty(supplierNameString) ||
                 TextUtils.isEmpty(supplierEmailString)) {
             // Since no fields were modified, we can return early without creating a new record.
             // No need to create ContentValues and no need to do any ContentProvider operations.
+
+            Toast.makeText(getApplicationContext(), "Please fill in all the missing entry fileds", Toast.LENGTH_LONG).show();
             return;
         }
 

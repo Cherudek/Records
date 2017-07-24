@@ -246,7 +246,6 @@ public class RecordProvider extends ContentProvider {
         if (contentValues == null) {
 
             // Check that the album name is not null
-
             if (contentValues.containsKey(RecordEntry.COLUMN_ALBUM_NAME)) {
             Toast.makeText(getContext(), R.string.field_required, Toast.LENGTH_SHORT).show();
             throw new IllegalArgumentException("Record requires an album name");
