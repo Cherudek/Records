@@ -385,15 +385,6 @@ public class EditorActivity extends AppCompatActivity implements
         String supplierNameString = mContactNameEditText.getText().toString().trim();
         String supplierEmailString = mContactEmailEditText.getText().toString().trim();
 
-        if (mImageUri == null) {
-            Toast.makeText(EditorActivity.this, "You Need an Image Cover", Toast.LENGTH_LONG).show();
-
-        }
-
-        // Get the imagePath
-        imagePath = mImageUri.toString();
-
-        Log.i(LOG_TAG, "TEST: Album Cover string is: " + imagePath);
 
         // Check if this is supposed to be a new record
         // and check if all the fields in the editor are blank
@@ -404,10 +395,23 @@ public class EditorActivity extends AppCompatActivity implements
                 TextUtils.isEmpty(supplierEmailString)) {
             // Since no fields were modified, we can return early without creating a new record.
             // No need to create ContentValues and no need to do any ContentProvider operations.
+            Toast.makeText(getApplicationContext(), "Please fill in all the missing entry fields", Toast.LENGTH_LONG).show();
+        }
 
-            Toast.makeText(getApplicationContext(), "Please fill in all the missing entry fileds", Toast.LENGTH_LONG).show();
+/*        if ((!TextUtils.isEmpty(albumNameString)) && (!TextUtils.isEmpty(bandNameString)) &&
+                        (!TextUtils.isEmpty(quantityString)) && (!TextUtils.isEmpty(priceString)) ||
+                        (!TextUtils.isEmpty(supplierNameString)) && (!TextUtils.isEmpty(supplierEmailString))) {
+
+        }*/
+        if (mImageUri == null) {
+            //Toast.makeText(EditorActivity.this, "You Need an Image Cover", Toast.LENGTH_LONG).show();
             return;
         }
+
+        // Get the imagePath
+        imagePath = mImageUri.toString();
+
+        Log.i(LOG_TAG, "TEST: Album Cover string is: " + imagePath);
 
         // Create a ContentValues object where column names are the keys,
         // and record attributes from the editor are the values.
@@ -444,10 +448,12 @@ public class EditorActivity extends AppCompatActivity implements
                 // If the new content URI is null, then there was an error with insertion.
                 Toast.makeText(this, getString(R.string.editor_insert_record_failed),
                         Toast.LENGTH_SHORT).show();
+
             } else {
                 // Otherwise, the insertion was successful and we can display a toast.
                 Toast.makeText(this, getString(R.string.editor_insert_record_successful),
                         Toast.LENGTH_SHORT).show();
+
             }
         } else {
             // Otherwise this is an EXISTING record, so update the record with content URI: mCurrentRecordUri
@@ -502,6 +508,7 @@ public class EditorActivity extends AppCompatActivity implements
                 saveRecord();
                 // Exit activity
                 finish();
+
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
@@ -718,15 +725,8 @@ public class EditorActivity extends AppCompatActivity implements
                 deleteRecord();
             }
         });
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Cancel" button, so dismiss the dialog
-                // and continue editing the record.
-                if (dialog != null) {
-                    dialog.dismiss();
-                }
-            }
-        });
+        builder.setNegativeButton(R.string.cancel, null);
+
 
         // Create and show the AlertDialog
         AlertDialog alertDialog = builder.create();

@@ -117,6 +117,7 @@ public class CatalogActivity extends AppCompatActivity implements
         // Create a ContentValues object where column names are the keys,
         // and Final Countdown's attributes are the values.
 
+
         Uri path = Uri.parse("android.resource://com.example.android.records/" + R.drawable.the_final_countdown_single);
         String imgPath = path.toString();
 
@@ -129,12 +130,11 @@ public class CatalogActivity extends AppCompatActivity implements
         values.put(RecordEntry.COLUMN_SUPPLIER_NAME, "Virgin");
         values.put(RecordEntry.COLUMN_SUPPLIER_EMAIL, "order@virgin.com");
 
-
         // Insert a new row for Final CountDown into the provider using the ContentResolver.
         // Use the {@link RecordEntry#CONTENT_URI} to indicate that we want to insert
         // into the records database table.
         // Receive the new content URI that will allow us to access Final Countdown data in the future.
-        Uri newUri = getContentResolver().insert(RecordEntry.CONTENT_URI, values);
+        getContentResolver().insert(RecordEntry.CONTENT_URI, values);
     }
 
     /**
